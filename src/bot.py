@@ -1,11 +1,10 @@
-import asyncio
+import asyncio, handlers, logging, sys
+
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-import handlers
-import logging
 from settings import TOKEN
-import sys
+
 
 
 async def main() -> None:
