@@ -12,7 +12,9 @@ async def main() -> None:
         TOKEN,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
+
     dp = Dispatcher()
+    
     dp.include_routers(
         handlers.message_router,
         handlers.callback_router,

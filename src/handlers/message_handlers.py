@@ -1,6 +1,7 @@
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
+from aiogram.utils.deep_linking import create_start_link
 
 
 router = Router(name=__name__)
