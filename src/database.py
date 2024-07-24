@@ -11,17 +11,13 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from sqlalchemy.orm import Session, sessionmaker
 
 
-# url = URL.create(
-#     drivername="postgresql",
-#     username="coderpad",
-#     host="/tmp/postgresql/socket",
-#     database="coderpad"
-# )
-# engine = create_engine(url)
-
-
 engine = create_async_engine(f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
 
 with engine.connect() as conn:
     res = conn.execute(text("Select vers"))
     print(f"{res=}")
+
+
+# https://coderpad.io/blog/development/sqlalchemy-with-postgresql/
+
+# https://github.com/mikemka/rcon-tg-bot/blob/master/handlers/event_group_message.py
