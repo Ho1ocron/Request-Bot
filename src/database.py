@@ -1,23 +1,45 @@
+import asyncio
+
 from settings import (
     DB_HOST,
     DB_NAME,
     DB_PASS,
     DB_PORT,
     DB_USER,
+    DEBUG,
 )
 
-from sqlalchemy import URL, create_engine, text
+from sqlalchemy import URL, create_engine, text, inspect
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import Session, sessionmaker
 
 
-engine = create_async_engine(f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
+url = URL.create(
+    username=DB_USER,
+    host=DB_HOST,
+    port=DB_PORT,
+    password=DB_PASS,
+    drivername="postgresql+asyncpg",
+    database=DB_NAME,
+)
+    
+    
 
-with engine.connect() as conn:
-    res = conn.execute(text("Select vers"))
-    print(f"{res=}")
 
+
+async def async_main(url: URL):
+    async_engine = create_async_engine(url=url, echo=True)
+
+    async with async_engine.connect() as conn:
+        res = await conn.execute(text("SELECT 1,2,3 union select 4,5,6"))
+        print(f"{res.first()=}")
+
+
+asyncio.run(async_main(url=url))
+
+#engine = create_async_engine(f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
 
 # https://coderpad.io/blog/development/sqlalchemy-with-postgresql/
 
 # https://github.com/mikemka/rcon-tg-bot/blob/master/handlers/event_group_message.py
+
