@@ -3,6 +3,7 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.enums.chat_type import ChatType
+from aiogram.types.dice import DiceEmoji
 
 
 router = Router(name=__name__)
@@ -23,7 +24,7 @@ async def start(message: Message) -> None:
     
     await message.answer(
         (
-            "<b>Welcome to our bot!</b>\n\n"
+            f"<b>{DiceEmoji.DICE}Welcome to our bot!</b>\n\n"
             
             "This bot provides you the opportunity to send your posts "
             "to your favorite Telegram channels if they use it.\n\n"

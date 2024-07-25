@@ -22,9 +22,6 @@ url = URL.create(
     drivername="postgresql+asyncpg",
     database=DB_NAME,
 )
-    
-    
-
 
 
 async def async_main(url: URL):
