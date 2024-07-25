@@ -24,13 +24,13 @@ async def start(message: Message) -> None:
     
     await message.answer(
         (
-            f"<b>{DiceEmoji.DICE}Welcome to our bot!</b>\n\n"
+            f"👋<b>Welcome to our bot!</b>👋\n\n"
             
-            "This bot provides you the opportunity to send your posts "
-            "to your favorite Telegram channels if they use it.\n\n"
+            "💡This bot provides you the opportunity to <b>send your posts</b> "
+            "to your favorite Telegram <b>channels</b> if they use it.\n\n"
             
-            "If you're an admin of a Telegram channel, you can use this "
-            "bot to allow your subscribers to send posts to your channel."
+            "🗯<i>If you're an admin of a Telegram channel, you can use this</i> "
+            "<i>bot to allow your subscribers to send posts to your channel.</i>"
         ),
         reply_markup=builder.as_markup()
     )
