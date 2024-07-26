@@ -1,7 +1,6 @@
-from aiogram import F, Router, types
+from aiogram import F, Router
 from aiogram.filters import Command
-from aiogram.types import Message
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.enums.chat_type import ChatType
 from keyboards import create_keyboard
 
@@ -14,7 +13,7 @@ router.message.filter(
 
 @router.message(Command(commands=["start"]))
 async def start(message: Message) -> None:
-    key_board = create_keyboard(text="📎 Add to your group", callback_data="https://t.me/ilovethissomuchbot?startgroup=true")
+    keyboard= create_keyboard(InlineKeyboardButton(text="📎 Add to your group", url="https://t.me/ilovethissomuchbot?startgroup=true"))
     #builder = InlineKeyboardBuilder()
     #builder.row(types.InlineKeyboardButton(text="📎 Add to your group", url=""))
     # -> keyboards.py
@@ -33,19 +32,32 @@ async def start(message: Message) -> None:
             "💭<i>If you're an admin of a Telegram channel, you can use this</i> "
             "<i>bot to allow your subscribers to send posts to your channel.</i>\n\n"
 
-            "❔<i>To get more information and commands, use /help.</i>\n\n"
+            "❔To get more information and commands, use /help.\n\n"
         ),
-        reply_markup=key_board.as_markup()
+        reply_markup=keyboard.as_markup()
     )
 
 
 
 @router.message(Command(commands=["help"]))
 async def help(message: Message) -> None:
+    keyboard = InlineKeyboardMarkup(inline_keyboard=
+       [ 
+            [
+                InlineKeyboardButton(text="📝 Command List", callback_data="send_command_list"),
+                InlineKeyboardButton(text="📌 Fast Answers", callback_data="send_fast_nswers"),
+            ],
+            [
+                InlineKeyboardButton(text="🔍 About Us", callback_data="send_about_us"),
+            ],
+        ]
+    )
+
     await message.answer(
         (
-            f"I'll help you, what are you looking for?"
-        )
+            f"✅ I'll help you, what are you looking for?"
+        ),
+        reply_markup=keyboard
         # Кнопка, которая будет присылать список всех доступных команд для пользователя, и их пояснение
         # Кнопка, которая будет предоставлять инфу о боте | об админах итп
         # callback data писать в callback_handlers.py

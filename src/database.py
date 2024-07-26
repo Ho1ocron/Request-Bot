@@ -24,7 +24,7 @@ url = URL.create(
 )
 
 
-async def async_main(url: URL):
+async def async_main(url: URL) -> None:
     async_engine = create_async_engine(url=url, echo=True)
 
     async with async_engine.connect() as conn:
