@@ -8,8 +8,9 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 #    return builder
 
 
-def create_keyboard(*args: InlineKeyboardButton) -> InlineKeyboardBuilder:
-    return InlineKeyboardBuilder().add(*args)
+#def create_keyboard(*args: InlineKeyboardButton) -> InlineKeyboardBuilder:
+#    return InlineKeyboardBuilder().add(*args)
+
 
 def main_keyboard() -> InlineKeyboardBuilder:
     return InlineKeyboardBuilder().add(
@@ -22,7 +23,7 @@ def user_help_keyboard() -> InlineKeyboardMarkup:
         inline_keyboard = [
             [
                 InlineKeyboardButton(text="📝 Command List", callback_data="send_command_list"),
-                InlineKeyboardButton(text="📌 Fast Answers", callback_data="send_fast_nswers"),
+                InlineKeyboardButton(text="📌 FAQ", callback_data="send_faq"),
             ],
             [
                 InlineKeyboardButton(text="🔍 About Us", callback_data="send_about_us"),
