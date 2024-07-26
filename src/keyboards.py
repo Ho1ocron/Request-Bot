@@ -3,7 +3,7 @@ from aiogram import types
 
 
 
-def create_keyboard():
+def create_keyboard(text: str, callback_data: str):
     builder = InlineKeyboardBuilder()
-    builder.add(types.InlineKeyboardButton(text="Add to your group", callback_data="random_value"))
+    builder.add(types.InlineKeyboardButton(text=text, callback_data=callback_data))
     return builder
