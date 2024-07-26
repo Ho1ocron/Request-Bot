@@ -11,7 +11,7 @@ from settings import (
 
 from sqlalchemy import URL, create_engine, text, inspect
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session, sessionmaker, DeclarativeBase
 
 
 url = URL.create(
@@ -23,10 +23,16 @@ url = URL.create(
     database=DB_NAME,
 )
 
+async_engine = create_async_engine(url=url, echo=True)
+
+async_session = async_sessionmaker(async_engine)
+
+
+class Base(DeclarativeBase):
+    pass
+
 
 async def async_main(url: URL) -> None:
-    async_engine = create_async_engine(url=url, echo=True)
-
     async with async_engine.connect() as conn:
         res = await conn.execute(text("SELECT 1,2,3 union select 4,5,6"))
         print(f"{res.first()=}")

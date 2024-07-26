@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.enums.chat_type import ChatType
-from keyboards import create_keyboard
+from keyboards import main_keyboard, user_help_keyboard
 
 
 router = Router(name=__name__)
@@ -13,7 +13,7 @@ router.message.filter(
 
 @router.message(Command(commands=["start"]))
 async def start(message: Message) -> None:
-    keyboard= create_keyboard(InlineKeyboardButton(text="📎 Add to your group", url="https://t.me/ilovethissomuchbot?startgroup=true"))
+    keyboard = main_keyboard()
     #builder = InlineKeyboardBuilder()
     #builder.row(types.InlineKeyboardButton(text="📎 Add to your group", url=""))
     # -> keyboards.py
@@ -41,17 +41,7 @@ async def start(message: Message) -> None:
 
 @router.message(Command(commands=["help"]))
 async def help(message: Message) -> None:
-    keyboard = InlineKeyboardMarkup(inline_keyboard=
-       [ 
-            [
-                InlineKeyboardButton(text="📝 Command List", callback_data="send_command_list"),
-                InlineKeyboardButton(text="📌 Fast Answers", callback_data="send_fast_nswers"),
-            ],
-            [
-                InlineKeyboardButton(text="🔍 About Us", callback_data="send_about_us"),
-            ],
-        ]
-    )
+    keyboard = user_help_keyboard()
 
     await message.answer(
         (
