@@ -24,7 +24,7 @@ async def start(message: Message) -> None:
     
     await message.answer(
         (
-            f"👋<b>Welcome to our bot!</b>👋\n\n"
+            f"👋 <b>Welcome to our bot!</b> 👋\n\n"
             
             "💡This bot provides you the opportunity to <b>send your posts</b> "
             "to your favorite Telegram <b>channels</b> if they use it.\n\n"

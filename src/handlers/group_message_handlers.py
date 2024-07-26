@@ -27,9 +27,9 @@ async def bot_added_to_group(message: Message) -> None:
     
     await message.answer(
         (
-            "✔️<b>Thank you for adding me to your group!</b>\n\n"
+            "✔️ <b>Thank you for adding me to your group!</b>\n\n"
 
-            "🪄Now, I will create <b>a link you can send to your subscribers</b> so they can use me for sending suggestions to you.\n\n"
+            "🪄 Now, I will create <b>a link you can send to your subscribers</b> so they can use me for sending suggestions to you.\n\n"
 
             "<i>To get more information and commands, use /help.</i>\n\n"
 
