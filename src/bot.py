@@ -19,6 +19,7 @@ async def main() -> None:
         handlers.message_router,
         handlers.callback_router,
         handlers.admin_router,
+        handlers.group_message_router
     )
     await dp.start_polling(bot)
 

@@ -1,0 +1,41 @@
+User:
+  - ID [: int]
+  - Username [: char]
+  - First Name [: char]
+  - Last Name [: char]
+  - Created At [: datetime]
+  - IsBanned [: bool] (False)
+  - IsActive [: bool] (True)
+
+
+Message:
+  - Chat [: -> SuggestionChat * one]
+  - Created At [: datetime]
+  - FromUser [: -> User * one]
+  - AdminChatMessageID [: int]
+
+
+InlineButtons:
+  - Text [: char]
+  - Link [: char]
+
+
+SuggestionChat:
+  - Created At [: datetime]
+
+  - Admin User [: -> User * one]
+  - Admin Group ID [: int]
+  - Deeplink [: char]  # md5(id + unix time) | user input
+  - DeeplinkChangedAt [: datetime | None]
+  # not allow to change deeplink if (now() - DeeplinkChangedAt) < 2days
+
+  - Subsribers [: -> User * many]
+
+  - UsersBanned [: -> User * many]
+  - AdminsCanBan [: bool]
+  
+  # Texts
+  - Start Text [: text]
+  - Reply Text [: text]
+
+  - Start Link Buttons [: -> InlineButtons * many]

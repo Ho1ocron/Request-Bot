@@ -1,0 +1,47 @@
+UserInterface:
+  - Customed deeplink
+  - Start and OnReply texts
+  - Notification on message publishing
+  - Button "Unsubscribe" on notification message
+
+
+AdminInterface:
+  - /ban <user_id>
+  - /unban <user_id>
+
+  - /mail - notification for all subscribers
+
+  - Settings Menu:
+    - subscribers count
+    - banned count
+    - change texts
+    - change deeplink
+
+
+SuperAdminInterface:
+  - /admin - list all commands
+
+  - /active - check active users {bot.send_chat_action}
+
+  - /stats:
+    - get graphs of:
+      - registered users for last 14 days, 1 month (from 01 date of curr month)
+      - activity of users for last 14 days, 1 month (from 01 date of curr month)
+    - text data:
+      - all registered users
+      - summary of all groups
+      - ...
+
+  - /dumpdata - dumping database to json
+  - /loaddata - load data from datadump
+
+  - /superban <user_id>
+  - /superunban <user_id>
+
+  - /supermail - notification:
+    - for all admins
+    - for all users
+    - for everyone
+    - for all members of selected SuggestionChat
+    - 
+
