@@ -6,17 +6,12 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 
 class Users(Base):
+    __tablename__ = "users"
+    username = Column(String, unique=True, index=True)
+    user_id = Column(Integer, unique=True)
+
+
+class Chats(Base):
+    __tablename__ = "chats"
     id: Mapped[int] = mapped_column(primary_key=True)
-    username: Mapped[str]
-
-
-metadata_obj = MetaData()
-
-users_table = Table(
-    "users", 
-    metadata_obj, 
-    Column("id", Integer, primary_key=True),
-    Column("username", String),
-)
-
-
+    title: Mapped[int]

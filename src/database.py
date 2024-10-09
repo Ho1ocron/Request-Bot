@@ -32,10 +32,11 @@ class Base(DeclarativeBase):
     pass
 
 
+
+
 async def async_main(url: URL) -> None:
     async with async_engine.connect() as conn:
-        res = await conn.execute(text("SELECT 1,2,3 union select 4,5,6"))
-        print(f"{res.first()=}")
+        await conn.run_sync(Base.metadata.create_all)
 
 
 asyncio.run(async_main(url=url))
