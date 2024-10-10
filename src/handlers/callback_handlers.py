@@ -15,3 +15,12 @@ async def send_random_value(callback: CallbackQuery) -> None:
             ""
         )
     )
+
+
+@router.callback_query(F.data == "custom_link")
+async def create_link(callback: CallbackQuery) -> None:
+    await callback.message.answer(
+        (
+            "📝 Send me a sentence you want to use in your link"
+        )
+    )

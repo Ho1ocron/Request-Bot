@@ -30,3 +30,9 @@ def user_help_keyboard() -> InlineKeyboardMarkup:
             ],
         ]
     )
+
+
+def group_link_keyboard() -> InlineKeyboardBuilder:
+    return InlineKeyboardBuilder().add(
+        InlineKeyboardButton(text="📌Generate your custom link", callback_data="custom_link")
+    )
