@@ -9,41 +9,48 @@ from settings import (
     DEBUG,
 )
 
-from sqlalchemy import URL, create_engine, text, inspect
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import Session, sessionmaker, DeclarativeBase
+#db path for now: ../databases/bot_db.db
+
+from tortoise import Tortoise, fields, models, run_async
 
 
-url = URL.create(
-    username=DB_USER,
-    host=DB_HOST,
-    port=DB_PORT,
-    password=DB_PASS,
-    drivername="postgresql+asyncpg",
-    database=DB_NAME,
-)
+class Task(models.Model):
+    id = fields.IntField(primary_key=True)
+    name = fields.CharField(max_length=256)
+    description = fields.CharField(max_length=500)
+    date_created = fields.DatetimeField(auto_now_add=True)
+    date_updated = fields.DatetimeField(auto_now=True)
 
-async_engine = create_async_engine(url=url, echo=True)
-
-async_session = async_sessionmaker(async_engine)
+    class Meta:
+        table = "tasks"
 
 
-class Base(DeclarativeBase):
-    pass
+async def main():
+    await Tortoise.init(
+        db_url="sqlite://../databases/bot_db.db",
+        # Модулем для моделей указываем __main__,
+        # т.к. все модели для показа будем прописывать
+        # именно тут
+        modules={'models': ['__main__']},
+    )
+    await Tortoise.generate_schemas()
+
+    task = await Task.create(
+	    name="First task",
+	    description="First task description"
+	)
+    print(task)
+    # Output: <Task>
+    print(task.name)
+    # Output: First task
+
+    task.name = "First task updated name"
+    await task.save()
+    print(task.name)
+    # Output: First task updated name
+
+    await Tortoise.close_connections()
 
 
-
-
-async def async_main(url: URL) -> None:
-    async with async_engine.connect() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-
-asyncio.run(async_main(url=url))
-
-#engine = create_async_engine(f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
-
-# https://coderpad.io/blog/development/sqlalchemy-with-postgresql/
-
-# https://github.com/mikemka/rcon-tg-bot/blob/master/handlers/event_group_message.py
-
+if __name__ == "__main__":
+    run_async(main())

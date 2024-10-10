@@ -33,6 +33,8 @@ async def bot_added_to_group(message: Message) -> None:
 
             "<i>To get more information and commands, use /help.</i>\n\n"
 
+            "🔍<i>You can send your link again with command /link.</i>\n\n"
+
             f"<b>Here is your link:</b> <code>{link}</code>\n\n"
         )
     )
@@ -55,7 +57,7 @@ async def generate_deeplink(message: Message) -> None:
 async def help(message: Message) -> None:
     await message.answer(
         (
-            ""
+            "<i>🔍You can send your link again with command /link.</i>\n\n"
             ""
             ""
         )
