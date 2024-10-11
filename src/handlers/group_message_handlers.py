@@ -31,7 +31,7 @@ async def bot_added_to_group(message: Message) -> None:
     group_id = message.chat.id
 
     link_context = generate_base_deeplink(content=group_id) 
-    link = await create_start_link(message.bot, link_context, encode=True)
+    link = await create_start_link(bot=message.bot, payload=group_id, encode=True)
     
     await message.answer(
         (
@@ -54,13 +54,13 @@ async def generate_deeplink(message: Message, state: FSMContext) -> None:
     group_id = message.chat.id
     
     link_context = generate_base_deeplink(content=group_id) 
-    link = await create_start_link(message.bot, link_context, encode=True)
+    link = await create_start_link(bot=message.bot, payload=group_id, encode=True)
 
     await state.set_state(Form.sentence)
 
     await message.answer(
         (
-            "📝 Reply on my message with sending me a sentence you want to use in your link.\n\n"
+            "📝 Reply on this message with sending me a sentence you want to use in your link.\n\n"
             f"Your current link:\n<code>{link}</code>"
         )
     )
@@ -70,7 +70,7 @@ async def generate_deeplink(message: Message, state: FSMContext) -> None:
 async def process_sentence(message: Message, state: FSMContext) -> None:
     await state.update_data(sentence=message.text)
     data = await state.get_data()
-    link = await create_start_link(message.bot, payload=str(data), encode=True)
+    link = await create_start_link(message.bot, payload=data, encode=True)
 
     await state.clear()
     
@@ -84,10 +84,16 @@ async def process_sentence(message: Message, state: FSMContext) -> None:
 
 @router.message(Command(commands=["help"]))
 async def help(message: Message) -> None:
+    group_id = message.chat.id
+    link = await create_start_link(message.bot, payload=group_id, encode=True)
     await message.answer(
         (
             "<i>🔍You can send your link again with command /link.</i>\n\n"
-            ""
+
+            f"<b>Your current link:</b>\n{link}\n\n"
+
+            f"Group id: {message.chat.id}"
+            
             ""
         )
     )

@@ -1,6 +1,7 @@
 from aiogram import F, Router
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandStart, CommandObject
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
 from keyboards import main_keyboard, user_help_keyboard
 
@@ -9,6 +10,12 @@ router = Router(name=__name__)
 router.message.filter(
     F.chat.type.in_({ChatType.PRIVATE}),
 )
+
+@router.message(CommandStart(deep_link=True))
+async def handler(message: Message, command: CommandObject):
+    args = command.args
+    payload = decode_payload(args)
+    await message.answer(f"Your payload: {payload}")
 
 
 @router.message(Command(commands=["start"]))
@@ -20,8 +27,7 @@ async def start(message: Message) -> None:
     
     # https://t.me/bot?startgroup=true
     # https://t.me/ilovethissomuchbot?startgroup=true
-    
-    
+
     await message.answer(
         (
             f"👋 <b>Welcome to our bot!</b> 👋\n\n"
@@ -32,11 +38,24 @@ async def start(message: Message) -> None:
             "💭<i>If you're an admin of a Telegram channel, you can use this</i> "
             "<i>bot to allow your subscribers to send posts to your channel.</i>\n\n"
 
+            "🔑 You can the channels that are available fow you with command /channels\n\n"
+
             "❔To get more information and commands, use /help.\n\n"
+
+            f"{message.from_user.id}"
+            
         ),
         reply_markup=keyboard.as_markup()
     )
 
+    
+@router.message(Command(commands=["channels"]))
+async def help(message: Message) -> None:
+    await message.answer(
+        (
+            f"Channels:"
+        )
+    )
 
 
 @router.message(Command(commands=["help"]))
