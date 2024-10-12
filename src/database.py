@@ -26,7 +26,7 @@ class User(Model):
 
 async def main():
     await Tortoise.init(
-        db_url='../databases/bot_db.db',  # Change to your database URL
+        db_url='db.sqlite3',  # Change to your database URL
         modules={'models': ['models']}
     )
     await Tortoise.generate_schemas()

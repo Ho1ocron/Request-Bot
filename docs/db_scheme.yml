@@ -6,6 +6,7 @@ User:
   - Created At [: datetime]
   - IsBanned [: bool] (False)
   - IsActive [: bool] (True)
+  - GroupId [: int]
 
 
 Message:
