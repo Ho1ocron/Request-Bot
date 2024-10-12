@@ -9,6 +9,8 @@ from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.formatting import Text
 from keyboards import group_link_keyboard
+from database import User, main
+from tortoise import Tortoise, run_async
 
 
 router = Router(name=__name__)
@@ -31,7 +33,7 @@ async def bot_added_to_group(message: Message) -> None:
     group_id = message.chat.id
 
     link_context = generate_base_deeplink(content=group_id) 
-    link = await create_start_link(bot=message.bot, payload=group_id, encode=True)
+    link = await create_start_link(bot=message.bot, payload=group_id, encode=True) #: sending диклинк
     
     await message.answer(
         (

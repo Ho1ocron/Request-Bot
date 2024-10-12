@@ -12,6 +12,7 @@ Message:
   - Chat [: -> SuggestionChat * one]
   - Created At [: datetime]
   - FromUser [: -> User * one]
+  - FromUserAnonimus [: bool] (False)
   - AdminChatMessageID [: int]
 
 
