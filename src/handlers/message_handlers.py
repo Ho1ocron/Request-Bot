@@ -1,20 +1,35 @@
 from aiogram import F, Router
 from aiogram.filters import Command, CommandStart, CommandObject
-from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import Message
 from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
+
+from tortoise import Tortoise, run_async
+
 from keyboards import main_keyboard, user_help_keyboard
+from database import User, main
+
+import logging
+
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+async def add_user(chat_id) -> None:
+    await User.create(chat_id=chat_id)
 
 
 router = Router(name=__name__)
-router.message.filter(
-    F.chat.type.in_({ChatType.PRIVATE}),
-)
+router.message.filter(F.chat.type.in_({ChatType.PRIVATE}),)
+
 
 @router.message(CommandStart(deep_link=True))
 async def handler(message: Message, command: CommandObject):
     args = command.args
     payload = decode_payload(args)
+    chat_id = message.chat.id
+    await add_user(chat_id=chat_id)
     await message.answer(f"Your payload: {payload}")
 
 
@@ -50,7 +65,7 @@ async def start(message: Message) -> None:
 
     
 @router.message(Command(commands=["channels"]))
-async def help(message: Message) -> None:
+async def channels(message: Message) -> None:
     await message.answer(
         (
             f"Channels:"
