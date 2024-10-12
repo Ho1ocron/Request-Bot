@@ -10,6 +10,7 @@ from settings import (
 )
 
 #db path for now: ../databases/bot_db.db
+#pip install -r requirements. txt
 
 from tortoise import Tortoise, fields, Model, run_async
 
