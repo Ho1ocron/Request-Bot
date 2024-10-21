@@ -43,6 +43,8 @@ async def bot_added_to_group(message: Message) -> None:
             "🔍<i>You can create your custom link with command /link.</i>\n\n"
 
             f"<b>Here is your link:</b> <code>{link}</code>\n\n"
+
+            "<b>Now, please, type your telegram channel name so your followers would recognize you.</b>\n\n"
         )
     )
 

@@ -23,6 +23,7 @@ async def main() -> None:
     )
     await init_db()
     await dp.start_polling(bot)
+    print("working")
 
 
 if __name__ == "__main__":

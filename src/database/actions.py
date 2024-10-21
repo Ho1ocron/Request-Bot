@@ -43,6 +43,4 @@ async def create_user(user_id: int, username: str, group_id: int) -> None:
     await user.save()
 
     print(user.id, user.name, user.list_of_channels)
-
-    await close_db()
     

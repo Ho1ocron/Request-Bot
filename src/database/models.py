@@ -16,3 +16,15 @@ class User(Model):
     
     class Meta:
         table = "users"
+
+
+class Groups(Model):
+    id = IntField(pk=True)
+    name = CharField(max_length=255)
+    admins = JSONField()
+
+    def __str__(self):
+        return super().__str__()
+    class Meta:
+        table = "groups"
+    
