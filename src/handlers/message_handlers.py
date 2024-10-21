@@ -34,7 +34,12 @@ async def handler(message: Message, command: CommandObject) -> None:
     username = message.from_user.first_name
 
     await actions.create_user(user_id=user_id, username=username, group_id=group_id)
-    await message.answer(f"Your payload: {group_id}")
+    await message.answer(
+        (
+            f"✅ Now, you can send your posts to this channel: "
+            f"channel name" #: Добавить название тгк сюда, куда юзер будет кидать посты
+        )
+    )
 
 
 @router.message(Command(commands=["start"]))
@@ -60,8 +65,6 @@ async def start(message: Message) -> None:
             "🔑 You can the channels that are available fow you with command /channels\n\n"
 
             "❔To get more information and commands, use /help.\n\n"
-
-            f"{message.from_user.id}"
             
         ),
         reply_markup=keyboard.as_markup()

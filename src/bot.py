@@ -8,6 +8,7 @@ from database.actions import init_db
 
 
 async def main() -> None:
+    
     bot = Bot(
         TOKEN,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
@@ -21,6 +22,7 @@ async def main() -> None:
         handlers.admin_router,
         handlers.group_message_router
     )
+
     await init_db()
     await dp.start_polling(bot)
     print("working")

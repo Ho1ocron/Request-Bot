@@ -18,13 +18,15 @@ class User(Model):
         table = "users"
 
 
-class Groups(Model):
+class Group(Model):
     id = IntField(pk=True)
     name = CharField(max_length=255)
-    admins = JSONField()
+    channel_name = CharField(max_length=255)
+    admin_list = JSONField()
 
     def __str__(self):
         return super().__str__()
+    
     class Meta:
         table = "groups"
     
