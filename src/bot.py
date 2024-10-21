@@ -1,10 +1,10 @@
-import asyncio, handlers, logging, sys
-
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from asyncio import run
+import handlers, logging, sys
 from settings import TOKEN
-
+from database.actions import init_db
 
 
 async def main() -> None:
@@ -21,9 +21,10 @@ async def main() -> None:
         handlers.admin_router,
         handlers.group_message_router
     )
+    await init_db()
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
-    asyncio.run(main())
+    run((main()))

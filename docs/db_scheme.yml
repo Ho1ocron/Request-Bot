@@ -6,12 +6,14 @@ User:
   - Created At [: datetime]
   - IsBanned [: bool] (False)
   - IsActive [: bool] (True)
+  - GroupId [: int]
 
 
 Message:
   - Chat [: -> SuggestionChat * one]
   - Created At [: datetime]
   - FromUser [: -> User * one]
+  - FromUserAnonimus [: bool] (False)
   - AdminChatMessageID [: int]
 
 
