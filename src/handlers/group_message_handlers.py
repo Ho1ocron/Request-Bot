@@ -9,7 +9,6 @@ from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.formatting import Text
 from keyboards import group_link_keyboard
-#from database import User
 from tortoise import Tortoise, run_async
 
 

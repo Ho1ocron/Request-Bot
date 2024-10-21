@@ -30,10 +30,10 @@ router.message.filter(F.chat.type.in_({ChatType.PRIVATE}),)
 @router.message(CommandStart(deep_link=True))
 async def handler(message: Message, command: CommandObject) -> None:
     group_id = int(decode_payload(command.args))
-    user_id = message.from_user.id
+    user_id = int(message.from_user.id)
     username = message.from_user.first_name
     #await add_user(user_id=user_id, username=username, group_id=group_id)
-    await actions.create_user()
+    await actions.create_user(user_id=user_id, username=username, group_id=group_id)
     await message.answer(f"Your payload: {group_id}")
 
 
@@ -95,5 +95,5 @@ async def help(message: Message) -> None:
 
 @router.message(Command(commands=["test"]))
 async def test(message: Message) -> None:
-    #await create_user()
-    ...
+    user = await actions.get_user(user_id=int(message.from_user.id))
+    print(user.id, user.name, user.list_of_channels)
