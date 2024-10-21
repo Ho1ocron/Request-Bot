@@ -31,4 +31,4 @@ DB_NAME = getenv('DB_NAME')
 
 DEBUG = getenv('DEBUG')
 
-
+TORTOISE_MODELS = ['database.models']

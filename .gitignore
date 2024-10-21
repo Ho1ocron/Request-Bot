@@ -2,4 +2,9 @@
 config.cfg
 __pycache__/
 .env
-1.env
+.venv
+env
+venv
+*.db
+*.sqlite3
+.DS_Store

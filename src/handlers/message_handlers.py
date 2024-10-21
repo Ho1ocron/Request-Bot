@@ -3,12 +3,8 @@ from aiogram.filters import Command, CommandStart, CommandObject
 from aiogram.types import Message
 from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
-
-from tortoise import Tortoise, run_async
-
+from database import actions
 from keyboards import main_keyboard, user_help_keyboard
-from database import User, main
-
 import logging
 
 
@@ -16,8 +12,15 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-async def add_user(chat_id) -> None:
-    await User.create(chat_id=chat_id)
+#async def add_user(user_id: int, username: str, group_id: int) -> None:
+#    await init_db()
+#    user = await User.create(id=user_id, name=username)
+#
+#    if user.related_chat_id_list is None:
+#        user.related_chat_id_list = [group_id]
+#    else:
+#        user.related_chat_id_list.append(group_id)
+#    await close_db()
 
 
 router = Router(name=__name__)
@@ -25,12 +28,13 @@ router.message.filter(F.chat.type.in_({ChatType.PRIVATE}),)
 
 
 @router.message(CommandStart(deep_link=True))
-async def handler(message: Message, command: CommandObject):
-    args = command.args
-    payload = decode_payload(args)
-    chat_id = message.chat.id
-    #await add_user(chat_id=chat_id)
-    await message.answer(f"Your payload: {payload}")
+async def handler(message: Message, command: CommandObject) -> None:
+    group_id = int(decode_payload(command.args))
+    user_id = message.from_user.id
+    username = message.from_user.first_name
+    #await add_user(user_id=user_id, username=username, group_id=group_id)
+    await actions.create_user()
+    await message.answer(f"Your payload: {group_id}")
 
 
 @router.message(Command(commands=["start"]))
@@ -87,3 +91,9 @@ async def help(message: Message) -> None:
         # callback data писать в callback_handlers.py
         # https://mastergroosha.github.io/aiogram-3-guide/buttons/
     )
+
+
+@router.message(Command(commands=["test"]))
+async def test(message: Message) -> None:
+    #await create_user()
+    ...

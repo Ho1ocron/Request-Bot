@@ -1,11 +1,9 @@
-import asyncio, handlers, logging, sys
-
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-
+from asyncio import run
+import handlers, logging, sys
 from settings import TOKEN
-
 
 
 async def main() -> None:
@@ -27,4 +25,4 @@ async def main() -> None:
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
-    asyncio.run(main())
+    run((main()))
