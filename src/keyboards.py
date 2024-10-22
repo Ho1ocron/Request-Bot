@@ -36,3 +36,9 @@ def group_link_keyboard() -> InlineKeyboardBuilder:
     return InlineKeyboardBuilder().add(
         InlineKeyboardButton(text="📌Generate your custom link", callback_data="custom_link")
     )
+
+
+def group_continue_keyboard() -> InlineKeyboardBuilder:
+    return InlineKeyboardBuilder().add(
+        InlineKeyboardButton(text="Continue ▶️", callback_data="group_continue")
+    )

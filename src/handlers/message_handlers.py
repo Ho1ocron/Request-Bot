@@ -60,9 +60,11 @@ async def start(message: Message) -> None:
             "to your favorite Telegram <b>channels</b> if they use it.\n\n"
             
             "💭<i>If you're an admin of a Telegram channel, you can use this</i> "
-            "<i>bot to allow your subscribers to send posts to your channel.</i>\n\n"
+            "<i>bot to allow your subscribers to send posts to your channel.</i>\n"
+            "Add this bot to your admin's group where your followers will send their posts.\n"
+            "❕<b>Please make sure that your group's name matches exactly your Telegram channel's name</b>❕\n\n"
 
-            "🔑 You can the channels that are available fow you with command /channels\n\n"
+            "🔑 You can view the channels that are available for you with command /channels\n\n"
 
             "❔To get more information and commands, use /help.\n\n"
             

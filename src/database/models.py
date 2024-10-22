@@ -21,7 +21,6 @@ class User(Model):
 class Group(Model):
     id = IntField(pk=True)
     name = CharField(max_length=255)
-    channel_name = CharField(max_length=255)
     admin_list = JSONField()
 
     def __str__(self):

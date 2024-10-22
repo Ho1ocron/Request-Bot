@@ -67,9 +67,7 @@ async def get_group(group_id: int) -> User:
 async def create_group(
         group_id: int,
         group_name: str,
-        channel_name: str, 
         admin_list: list, 
-        new_admin: Optional[int]
     ) -> None:
     
     exists = await check_group_exists(group_id=group_id)
@@ -78,7 +76,6 @@ async def create_group(
         group = await Group.create(
             id=group_id,
             name=group_name,
-            channel_name=channel_name,
             admin_list=admin_list,
         )
         await group.save()
@@ -86,7 +83,6 @@ async def create_group(
     
     group = await Group.get(id=group_id)
     group.name = group_name
-    group.channel_name = channel_name
     group.admin_list = admin_list
 
     await group.save()
