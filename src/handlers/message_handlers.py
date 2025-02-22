@@ -34,6 +34,14 @@ async def handler(message: Message, command: CommandObject) -> None:
     username = message.from_user.first_name
 
     await actions.create_user(user_id=user_id, username=username, group_id=group_id)
+    if actions.check_user_exists(user_id=message.chat.id):
+        await message.answer(
+            (
+                "You're already in, body!"
+            )
+        )
+        return
+    
     await message.answer(
         (
             f"✅ Now, you can send your posts to this channel: "

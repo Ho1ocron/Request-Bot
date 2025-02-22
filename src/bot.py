@@ -4,7 +4,7 @@ from aiogram.enums import ParseMode
 from asyncio import run
 import handlers, logging, sys
 from settings import TOKEN
-from database.actions import init_db
+from database.actions import init_db, close_db
 
 
 async def main() -> None:
@@ -31,3 +31,6 @@ async def main() -> None:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     run((main()))
+
+
+    
