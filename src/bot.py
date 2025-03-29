@@ -3,7 +3,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from asyncio import run
 import handlers, logging, sys
-from settings import TOKEN
+from settings import TOKEN, ADMIN_IDS
 from database.actions import init_db, close_db
 
 
@@ -31,6 +31,7 @@ async def main() -> None:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     run((main()))
+    print(ADMIN_IDS)
 
 
     

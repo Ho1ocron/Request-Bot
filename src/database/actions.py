@@ -1,6 +1,7 @@
-import settings
+from settings import TORTOISE_MODELS, DEBUG
 from typing import Optional
 from tortoise import Tortoise
+from tortoise.expressions import Q
 from database.models import User, Group
 
 
@@ -8,18 +9,28 @@ from database.models import User, Group
 
 
 async def init_db() -> None:
-    await Tortoise.init(
-        db_url='sqlite://db.sqlite3',
-        modules={'models': settings.TORTOISE_MODELS},
-    )
-    await Tortoise.generate_schemas()
-
+    if DEBUG:
+        await Tortoise.init(
+            db_url='sqlite://db.sqlite3',
+            modules={'models': TORTOISE_MODELS},
+        )
+        await Tortoise.generate_schemas()
+    return
 
 async def close_db() -> None:
     await Tortoise.close_connections()
 
 
 #------------------------------------------------------------User database-------------------------------------------------------------#
+async def get_users_groups(user_id: int) -> list[str]:
+    user = await User.get_or_none(id=user_id)
+    if not user or not user.list_of_channels:
+        return []  # Return empty list if user doesn't exist or has no groups
+    
+    # Fetch group names based on stored group IDs
+    groups = await Group.filter(id__in=user.list_of_channels).values_list("name", flat=True)
+    
+    return groups
 
 
 async def check_user_exists(user_id: int) -> bool:

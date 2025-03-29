@@ -3,7 +3,7 @@ from aiogram.filters import Command, CommandStart, CommandObject
 from aiogram.types import Message
 from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
-from database import actions
+from database.actions import create_user, check_user_exists, get_users_groups, get_user
 from keyboards import main_keyboard, user_help_keyboard
 import logging
 
@@ -33,11 +33,11 @@ async def handler(message: Message, command: CommandObject) -> None:
     user_id = int(message.from_user.id)
     username = message.from_user.first_name
 
-    await actions.create_user(user_id=user_id, username=username, group_id=group_id)
-    if actions.check_user_exists(user_id=message.chat.id):
+    await create_user(user_id=user_id, username=username, group_id=group_id)
+    if await check_user_exists(user_id=message.chat.id):
         await message.answer(
             (
-                "You're already in, body!"
+                "You're already in, buddy!"
             )
         )
         return
@@ -83,9 +83,10 @@ async def start(message: Message) -> None:
     
 @router.message(Command(commands=["channels"]))
 async def channels(message: Message) -> None:
+    groups = await get_users_groups(user_id=int(message.from_user.id))
     await message.answer(
         (
-            f"Channels:"
+            f"Channels: {", ".join(groups)}"
         )
     )
 
@@ -108,7 +109,7 @@ async def help(message: Message) -> None:
 
 @router.message(Command(commands=["info"]))
 async def test(message: Message) -> None:
-    user = await actions.get_user(user_id=int(message.from_user.id))
+    user = await get_user(user_id=int(message.from_user.id))
     print(user.id, user.name, user.list_of_channels)
     await message.answer(
         (
@@ -117,9 +118,3 @@ async def test(message: Message) -> None:
             f"groups: {user.list_of_channels}"
         )
     )
-
-
-@router.message(Command(commands=["close"]))
-async def close_db(message: Message) -> None:
-    await actions.close_db()
-    await message.answer("Database closed.")
