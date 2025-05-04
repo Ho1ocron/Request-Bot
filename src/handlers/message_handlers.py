@@ -5,6 +5,9 @@ from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
 from database.actions import create_user, check_user_exists, get_users_groups, get_user
 from keyboards import main_keyboard, user_help_keyboard
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.fsm.context import FSMContext
+from aiogram.enums import ContentType
 import logging
 
 
@@ -27,13 +30,18 @@ router = Router(name=__name__)
 router.message.filter(F.chat.type.in_({ChatType.PRIVATE}),)
 
 
+class PostStates(StatesGroup):
+    waiting_for_post = State()
+
+
 @router.message(CommandStart(deep_link=True))
-async def handler(message: Message, command: CommandObject) -> None:
+async def handler(message: Message, command: CommandObject, state: FSMContext) -> None:
     group_id = int(decode_payload(command.args))
     user_id = int(message.from_user.id)
     username = message.from_user.first_name
 
     await create_user(user_id=user_id, username=username, group_id=group_id)
+    await state.set_state(PostStates.waiting_for_post)
     if await check_user_exists(user_id=message.chat.id):
         await message.answer(
             (
@@ -48,6 +56,7 @@ async def handler(message: Message, command: CommandObject) -> None:
             f"channel name" #: Добавить название тгк сюда, куда юзер будет кидать посты
         )
     )
+
 
 
 @router.message(Command(commands=["start"]))
@@ -118,3 +127,9 @@ async def test(message: Message) -> None:
             f"groups: {user.list_of_channels}"
         )
     )
+
+@router.message(PostStates.waiting_for_post, ~F.text.startswith("/"))
+async def receive_post(message: Message, state: FSMContext):
+    await message.answer(str(message.text))
+    await state.clear()
+    await state.set_state(PostStates.waiting_for_post)
