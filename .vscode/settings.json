@@ -1,3 +1,11 @@
 {
-    
+    "terminal.integrated.fontSize":14,
+    "editor.fontSize": 14,
+    "editor.tabSize": 4,
+    "key": "ctrl+c",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": {
+      "text": "\u0003"
+    },
+    "when": "terminalFocus"
 }
