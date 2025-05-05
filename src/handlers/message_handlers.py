@@ -4,8 +4,9 @@ from aiogram.types import Message
 from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
 from database.actions import create_user, check_user_exists, get_users_groups, get_user
-from keyboards import main_keyboard, user_help_keyboard
+from keyboards import main_keyboard, user_help_keyboard, choose_channel
 from aiogram.fsm.state import State, StatesGroup
+from states import PostStates
 from aiogram.fsm.context import FSMContext
 from aiogram.enums import ContentType
 import logging
@@ -15,10 +16,10 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-#async def add_user(user_id: int, username: str, group_id: int) -> None:
+# async def add_user(user_id: int, username: str, group_id: int) -> None:
 #    await init_db()
 #    user = await User.create(id=user_id, name=username)
-#
+
 #    if user.related_chat_id_list is None:
 #        user.related_chat_id_list = [group_id]
 #    else:
@@ -28,10 +29,6 @@ logger = logging.getLogger(__name__)
 
 router = Router(name=__name__)
 router.message.filter(F.chat.type.in_({ChatType.PRIVATE}),)
-
-
-class PostStates(StatesGroup):
-    waiting_for_post = State()
 
 
 @router.message(CommandStart(deep_link=True))
@@ -119,7 +116,6 @@ async def help(message: Message) -> None:
 @router.message(Command(commands=["info"]))
 async def test(message: Message) -> None:
     user = await get_user(user_id=int(message.from_user.id))
-    print(user.id, user.name, user.list_of_channels)
     await message.answer(
         (
             f"id: {user.id}\n"
@@ -129,7 +125,14 @@ async def test(message: Message) -> None:
     )
 
 @router.message(PostStates.waiting_for_post, ~F.text.startswith("/"))
-async def receive_post(message: Message, state: FSMContext):
-    await message.answer(str(message.text))
+async def receive_post(message: Message, state: FSMContext) -> None:
+    user_groups = await get_users_groups(user_id=int(message.from_user.id))
+    keyboard = choose_channel(groups=user_groups)
+    await message.answer(
+        (
+            "✅ Choose a channel where you want to send your post:"
+        ),
+        reply_markup=keyboard
+    )
     await state.clear()
     await state.set_state(PostStates.waiting_for_post)

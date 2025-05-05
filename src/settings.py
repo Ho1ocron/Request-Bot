@@ -16,7 +16,6 @@ if DOTENV_PATH.exists():
 TOKEN = getenv('TOKEN')
 
 ADMIN_IDS = literal_eval(getenv('ADMIN_IDS'))
-print(ADMIN_IDS)
 
 # * Database Config
 

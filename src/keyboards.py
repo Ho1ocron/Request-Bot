@@ -42,3 +42,14 @@ def group_continue_keyboard() -> InlineKeyboardBuilder:
     return InlineKeyboardBuilder().add(
         InlineKeyboardButton(text="Continue ▶️", callback_data="group_continue")
     )
+
+
+def choose_channel(groups:list[str]) -> InlineKeyboardMarkup:
+    keyboard = []
+    cancelbtn = [InlineKeyboardButton(text="Cancel", callback_data="cancel")]
+    for i in range(len(groups)):
+        group = groups[i]
+        keyboard.append(
+            InlineKeyboardButton(text=group, callback_data=group+str(i))
+        )
+    return InlineKeyboardMarkup(inline_keyboard=[keyboard, cancelbtn])

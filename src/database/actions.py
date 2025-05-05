@@ -51,7 +51,6 @@ async def create_user(user_id: int, username: str, group_id: int) -> None:
             list_of_channels=[group_id]
         )
         await user.save()
-        print(user)
         return
     
     user = await User.get(id=user_id)
@@ -61,7 +60,6 @@ async def create_user(user_id: int, username: str, group_id: int) -> None:
         user.list_of_channels.append(group_id)
 
     await user.save()
-    print(user.id, user.name, user.list_of_channels)
     
 
 #------------------------------------------------------------Group database-----------------------------------------------------------#
