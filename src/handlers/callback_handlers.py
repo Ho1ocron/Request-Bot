@@ -40,7 +40,7 @@ async def group_continue(callback: CallbackQuery) -> None:
     )
 
 
-@router.callback_query(F.data == "Cancel", PostStates.waiting_for_post,)
+@router.callback_query(F.data == "cancel", PostStates.waiting_for_post,)
 async def Cancel_sending(callback: CallbackQuery, state: FSMContext) -> None: 
     await state.clear()
     await callback.message.answer(
@@ -48,3 +48,4 @@ async def Cancel_sending(callback: CallbackQuery, state: FSMContext) -> None:
             "Action cancelled."
         )
     )
+    await state.set_state(PostStates.waiting_for_post)
