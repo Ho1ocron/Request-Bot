@@ -14,7 +14,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 def main_keyboard() -> InlineKeyboardBuilder:
     return InlineKeyboardBuilder().add(
-        InlineKeyboardButton(text="📎 Add to your group", url="https://t.me/ilovethissomuchbot?startgroup=true")
+        InlineKeyboardButton(text="📎 Add to your group", url="https://t.me/resuggestion_bot?startgroup=true")
     )
 
 

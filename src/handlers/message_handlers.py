@@ -3,7 +3,7 @@ from aiogram.filters import Command, CommandStart, CommandObject
 from aiogram.types import Message
 from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
-from database.actions import create_user, check_user_exists, get_users_groups, get_user
+from database.actions import create_user, check_user_exists, get_users_groups, get_user, if_user_in_group, get_group
 from keyboards import main_keyboard, user_help_keyboard, choose_channel
 from aiogram.fsm.state import State, StatesGroup
 from states import PostStates
@@ -36,10 +36,12 @@ async def handler(message: Message, command: CommandObject, state: FSMContext) -
     group_id = int(decode_payload(command.args))
     user_id = int(message.from_user.id)
     username = message.from_user.first_name
-
+    
     await create_user(user_id=user_id, username=username, group_id=group_id)
+    groups = await get_users_groups(user_id=user_id)
+    group = await get_group(group_id=group_id)
     await state.set_state(PostStates.waiting_for_post)
-    if await check_user_exists(user_id=message.chat.id):
+    if group.name in groups:
         await message.answer(
             (
                 "You're already in, buddy!"

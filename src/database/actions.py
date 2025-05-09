@@ -65,6 +65,13 @@ async def create_user(user_id: int, username: str, group_id: int) -> None:
 #------------------------------------------------------------Group database-----------------------------------------------------------#
 
 
+async def if_user_in_group(user_id: int, group_id: int) -> bool:
+    group = await Group.get(id=group_id)
+    user = await User.get_or_none(id=user_id)
+    if user in group: return True
+    return False
+
+
 async def check_group_exists(group_id: int) -> bool:
     return await Group.filter(id=group_id).exists()
 
