@@ -3,9 +3,8 @@ from aiogram.filters import Command, CommandStart, CommandObject
 from aiogram.types import Message
 from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
-from database.actions import create_user, check_user_exists, get_users_groups, get_user, if_user_in_group, get_group
+from database.actions import create_user, get_users_groups, get_user, get_group
 from keyboards import main_keyboard, user_help_keyboard, choose_channel
-from aiogram.fsm.state import State, StatesGroup
 from states import PostStates
 from aiogram.fsm.context import FSMContext
 from aiogram.enums import ContentType
