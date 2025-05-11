@@ -7,7 +7,7 @@ from database.actions import create_user, get_users_groups, get_user, get_group
 from keyboards import main_keyboard, user_help_keyboard, choose_channel
 from states import PostStates
 from aiogram.fsm.context import FSMContext
-from aiogram.enums import ContentType
+from aiogram import Bot
 import logging
 
 
@@ -15,19 +15,10 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-# async def add_user(user_id: int, username: str, group_id: int) -> None:
-#    await init_db()
-#    user = await User.create(id=user_id, name=username)
-
-#    if user.related_chat_id_list is None:
-#        user.related_chat_id_list = [group_id]
-#    else:
-#        user.related_chat_id_list.append(group_id)
-#    await close_db()
-
-
 router = Router(name=__name__)
 router.message.filter(F.chat.type.in_({ChatType.PRIVATE}),)
+
+bot_name: str
 
 
 @router.message(CommandStart(deep_link=True))
@@ -59,13 +50,10 @@ async def handler(message: Message, command: CommandObject, state: FSMContext) -
 
 @router.message(Command(commands=["start"]))
 async def start(message: Message) -> None:
-    keyboard = main_keyboard()
+    keyboard = main_keyboard(bot_name=bot_name.username)
     #builder = InlineKeyboardBuilder()
     #builder.row(types.InlineKeyboardButton(text="📎 Add to your group", url=""))
     # -> keyboards.py
-    
-    # https://t.me/bot?startgroup=true
-    # https://t.me/ilovethissomuchbot?startgroup=true
 
     await message.answer(
         (

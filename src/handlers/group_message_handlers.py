@@ -4,28 +4,14 @@ from aiogram.enums.content_type import ContentType
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.utils.deep_linking import create_start_link
-from aiogram.filters.state import State, StatesGroup
-from aiogram.fsm.context import FSMContext
-from aiogram.utils.formatting import Text
-from database.actions import get_group, create_group
-from utils import generate_base_deeplink
-from keyboards import group_continue_keyboard
-
+from database.actions import create_group
+from aiogram.types import ChatMemberUpdated
+from aiogram.enums.chat_member_status import ChatMemberStatus
 
 router = Router(name=__name__)
 router.message.filter(
     F.chat.type.in_({ChatType.GROUP, ChatType.SUPERGROUP}),
 )
-
-
-#----------------------------------------------------------States------------------------------------------------------------#
-
-
-class Form(StatesGroup):
-    sentence = State()
-
-
-#-------------------------------------------------------Group Commands-------------------------------------------------------#
 
 
 @router.message(F.content_type.in_({ContentType.NEW_CHAT_MEMBERS}))
@@ -34,7 +20,6 @@ async def bot_added_to_group(message: Message) -> None:
     # Creating SuggestionChat with standart values, creating default deeplink
     # Sending success message
     # Open Settings of current SuggestionChat
-    keyboard = group_continue_keyboard().as_markup()
     group_id = message.chat.id
     group_name = message.chat.title
     link = await create_start_link(bot=message.bot, payload=group_id, encode=True) #: sending диклинк
@@ -59,39 +44,6 @@ async def bot_added_to_group(message: Message) -> None:
     )
 
 
-# @router.message(Command(commands=["link"]))
-# async def generate_deeplink(message: Message, state: FSMContext) -> None:
-#     # TODO: 1) add the ability to create custom links
-#     # 2) compare with the db if the link was already created and send that created link
-#     #  
-#     group_id = message.chat.id
-    
-#     link = await create_start_link(bot=message.bot, payload=group_id, encode=True)
-
-#     await state.set_state(Form.sentence)
-
-#     await message.answer(
-#         (
-#             "📝 Reply on this message with sending me a sentence you want to use in your link.\n\n"
-#             f"Your current link:\n<code>{link}</code>"
-#         )
-#     )
-    
-
-@router.message(Form.sentence)
-async def process_sentence(message: Message, state: FSMContext) -> None:
-    await state.update_data(sentence=message.text)
-    data = await state.get_data()
-    link = await create_start_link(message.bot, payload=data, encode=True)
-    await state.clear()
-    await message.answer(
-        (
-            "Alright, this will be your link:\n"
-            f"<code>{link}</code>"
-        )
-    )
-
-
 @router.message(Command(commands=["help"]))
 async def help(message: Message) -> None:
     group_id = message.chat.id
@@ -107,3 +59,16 @@ async def help(message: Message) -> None:
             ""
         )
     )
+
+
+@router.message(F.new_chat_title)
+async def title_changed(message: Message) -> None:
+    new_title = message.new_chat_title
+    chat_id = message.chat.id
+    admin_list = [] # Do not forget to change it
+    await create_group(group_id=chat_id, group_name=new_title, admin_list=admin_list)
+
+
+@router.my_chat_member(F.new_chat_member.status.in_({ChatMemberStatus.LEFT, ChatMemberStatus.KICKED}))
+async def bot_removed(event: ChatMemberUpdated) -> None:
+    chat = event.chat

@@ -2,7 +2,8 @@ from settings import TORTOISE_MODELS, DEBUG
 from typing import Optional
 from tortoise import Tortoise
 from tortoise.expressions import Q
-from database.models import User, Group
+from database.models import User, Group, GroupNotFoundError
+from typing import Optional
 
 
 #------------------------------------------------------------Datavase config-----------------------------------------------------------#
@@ -80,6 +81,13 @@ async def get_group(group_id: int) -> User:
     return await Group.get(id=group_id)
 
 
+async def delete_group(group_id: int) -> str:
+    group = await Group.get_or_none(id=group_id)
+    if group:
+        group.delete()
+    else:
+        raise GroupNotFoundError(group_id=group_id)
+
 async def create_group(
         group_id: int,
         group_name: str,
@@ -99,7 +107,7 @@ async def create_group(
     
     group = await Group.get(id=group_id)
     group.name = group_name
-    group.admin_list = admin_list
+    group.admin_list += admin_list
 
     await group.save()
-    
+

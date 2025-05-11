@@ -12,9 +12,9 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 #    return InlineKeyboardBuilder().add(*args)
 
 
-def main_keyboard() -> InlineKeyboardBuilder:
+def main_keyboard(bot_name: str) -> InlineKeyboardBuilder:
     return InlineKeyboardBuilder().add(
-        InlineKeyboardButton(text="📎 Add to your group", url="https://t.me/resuggestion_bot?startgroup=true")
+        InlineKeyboardButton(text="📎 Add to your group", url=f"https://t.me/{bot_name}?startgroup=true")
     )
 
 

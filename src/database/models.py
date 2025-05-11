@@ -28,4 +28,9 @@ class Group(Model):
     
     class Meta:
         table = "groups"
-    
+
+
+class GroupNotFoundError(Exception):
+    def __init__(self, group_id):
+        super().__init__(f"Group with ID {group_id} not found.")
+        self.group_id = group_id
