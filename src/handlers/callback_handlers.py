@@ -1,9 +1,8 @@
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
-from aiogram.utils.deep_linking import create_start_link
-from database.actions import get_group, create_group
+from database.actions import create_group
 from aiogram.fsm.context import FSMContext
-from states import PostStates 
+from states import PostStates, GroupCallback 
 
 
 router = Router(name=__name__)
@@ -49,3 +48,8 @@ async def Cancel_sending(callback: CallbackQuery, state: FSMContext) -> None:
         )
     )
     await state.set_state(PostStates.waiting_for_post)
+
+
+@router.callback_query(GroupCallback.filter())
+async def forwarding(callback: CallbackQuery, callback_data: GroupCallback):
+    await callback.answer(f"{callback_data.group_name=}")

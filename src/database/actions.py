@@ -77,7 +77,7 @@ async def check_group_exists(group_id: int) -> bool:
     return await Group.filter(id=group_id).exists()
 
 
-async def get_group(group_id: int) -> User:
+async def get_group(group_id: int) -> Group:
     return await Group.get(id=group_id)
 
 

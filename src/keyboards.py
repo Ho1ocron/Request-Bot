@@ -1,5 +1,7 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from states import GroupCallback
+from database.actions import get_group
 
 
 #def create_keyboard(text: str, callback_data: Optional[str] = None, url: Optional[str] = None) -> InlineKeyboardBuilder:
@@ -44,12 +46,12 @@ def group_continue_keyboard() -> InlineKeyboardBuilder:
     )
 
 
-def choose_channel(groups:list[str]) -> InlineKeyboardMarkup:
+def choose_channel(groups:list[int]) -> InlineKeyboardMarkup:
     keyboard = []
     cancelbtn = [InlineKeyboardButton(text="Cancel", callback_data="cancel")]
-    for i in range(len(groups)):
-        group = groups[i]
+    for _id in groups:
+        group = get_group(group_id=_id)
         keyboard.append(
-            InlineKeyboardButton(text=group, callback_data=group+str(i))
+            InlineKeyboardButton(text=group.name, callback_data=GroupCallback(gropu_id=_id, group_name=group.name).pack())
         )
     return InlineKeyboardMarkup(inline_keyboard=[keyboard, cancelbtn])

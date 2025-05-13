@@ -114,7 +114,7 @@ async def test(message: Message) -> None:
     )
 
 @router.message(PostStates.waiting_for_post, ~F.text.startswith("/"))
-async def receive_post(message: Message, state: FSMContext) -> None:
+async def receive_post(message: Message, state: FSMContext) -> None:    
     user_groups = await get_users_groups(user_id=int(message.from_user.id))
     keyboard = choose_channel(groups=user_groups)
     await message.answer(
