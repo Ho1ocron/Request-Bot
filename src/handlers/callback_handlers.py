@@ -2,8 +2,8 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from database.actions import create_group
 from aiogram.fsm.context import FSMContext
-from states import PostStates, GroupCallback 
-from states import PostStates
+from states import PostStates, GroupCallback, get_message_to_forward, set_message_to_forward
+
 
 
 router = Router(name=__name__)
@@ -48,6 +48,8 @@ async def Cancel_sending(callback: CallbackQuery, state: FSMContext) -> None:
             "Sending cancelled."
         )
     )
+    set_message_to_forward(None)  # Clear the message to forward
+    await state.clear()
     await state.set_state(PostStates.waiting_for_post)
 
 
@@ -57,7 +59,7 @@ async def forwarding(callback: CallbackQuery, callback_data: GroupCallback):
 
 
 @router.callback_query(F.data.startswith("select_group:"))
-async def select_group(callback: CallbackQuery) -> None:
+async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     group_id = callback.data.split(":")[1]
     # Here you would typically handle the selection of the group, e.g., store it in the database or state
     # For now, we just acknowledge the selection
@@ -67,14 +69,14 @@ async def select_group(callback: CallbackQuery) -> None:
     # await callback.message.answer(
     #     f"You have selected the group with ID: {group_id}"
     # )
-    # Import the FSM state where the message_id is stored
+    # Import the FSM state where the message_id is s`tored
 
     # Get FSMContext for this user
-    state = FSMContext.from_user(callback.from_user.id, callback.bot)
 
     # Retrieve the message_id to forward from FSM state
     data = await state.get_data()
     message_id = data.get("message_id_to_forward")
+    message_id = get_message_to_forward()
     if not message_id:
         await callback.message.answer("No message to forward found in state.")
         return
@@ -90,3 +92,5 @@ async def select_group(callback: CallbackQuery) -> None:
     except Exception as e:
         await callback.message.answer(f"Failed to forward message: {e}")
 
+    await state.clear()
+    await state.set_state(PostStates.waiting_for_post)

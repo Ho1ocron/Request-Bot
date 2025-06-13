@@ -5,7 +5,7 @@ from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
 from database.actions import create_user, get_users_groups, get_user, get_group
 from keyboards import main_keyboard, user_help_keyboard, choose_channel
-from states import PostStates
+from states import PostStates, set_message_to_forward
 from aiogram.fsm.context import FSMContext
 from aiogram import Bot
 import logging
@@ -127,6 +127,7 @@ async def receive_post(message: Message, state: FSMContext) -> None:
             [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel")]
         ]
     )
+    set_message_to_forward(message_id=message.message_id)
     await message.answer(
         "Please select a channel:",
         reply_markup=keyboard
