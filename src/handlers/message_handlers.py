@@ -116,12 +116,13 @@ async def test(message: Message) -> None:
 @router.message(PostStates.waiting_for_post, ~F.text.startswith("/"))
 async def receive_post(message: Message, state: FSMContext) -> None:    
     user_groups = await get_users_groups(user_id=int(message.from_user.id))
-    keyboard = choose_channel(groups=user_groups)
+    user_groups_ids = await get_users_groups(user_id=int(message.from_user.id), send_id=True)
+    print(user_groups_ids, type(user_groups_ids[0]))
     await message.answer(
         (
             "✅ Choose a channel where you want to send your post:"
-        ),
-        reply_markup=keyboard
+        )
     )
     await state.clear()
     await state.set_state(PostStates.waiting_for_post)
+    

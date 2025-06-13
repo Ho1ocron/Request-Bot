@@ -23,14 +23,16 @@ async def close_db() -> None:
 
 
 #------------------------------------------------------------User database-------------------------------------------------------------#
-async def get_users_groups(user_id: int) -> list[str]:
+async def get_users_groups(user_id: int, send_id: bool = False) -> list[str]:
     user = await User.get_or_none(id=user_id)
     if not user or not user.list_of_channels:
         return []  # Return empty list if user doesn't exist or has no groups
     
     # Fetch group names based on stored group IDs
+    if send_id:
+        groups = await Group.filter(id__in=user.list_of_channels).values_list("id", flat=True)
+        return groups
     groups = await Group.filter(id__in=user.list_of_channels).values_list("name", flat=True)
-    
     return groups
 
 

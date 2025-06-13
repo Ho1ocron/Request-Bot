@@ -53,7 +53,6 @@ async def choose_channel(groups:list[int]) -> InlineKeyboardMarkup:
     for _id in groups:
             
         group = await get_group(group_id=_id)
-        print(type(group))
         keyboard.append(
             InlineKeyboardButton(text=group.name, callback_data=GroupCallback(gropu_id=_id, group_name=group.name).pack())
         )
