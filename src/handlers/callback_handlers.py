@@ -3,6 +3,7 @@ from aiogram.types import CallbackQuery
 from database.actions import create_group
 from aiogram.fsm.context import FSMContext
 from states import PostStates, GroupCallback 
+from states import PostStates
 
 
 router = Router(name=__name__)
@@ -44,7 +45,7 @@ async def Cancel_sending(callback: CallbackQuery, state: FSMContext) -> None:
     await state.clear()
     await callback.message.answer(
         (
-            "Action cancelled."
+            "Sending cancelled."
         )
     )
     await state.set_state(PostStates.waiting_for_post)
@@ -53,3 +54,39 @@ async def Cancel_sending(callback: CallbackQuery, state: FSMContext) -> None:
 @router.callback_query(GroupCallback.filter())
 async def forwarding(callback: CallbackQuery, callback_data: GroupCallback):
     await callback.answer(f"{callback_data.group_name=}")
+
+
+@router.callback_query(F.data.startswith("select_group:"))
+async def select_group(callback: CallbackQuery) -> None:
+    group_id = callback.data.split(":")[1]
+    # Here you would typically handle the selection of the group, e.g., store it in the database or state
+    # For now, we just acknowledge the selection
+    # await callback.answer(f"Selected group ID: {group_id}")
+    
+    # Optionally, you can send a confirmation message to the user
+    # await callback.message.answer(
+    #     f"You have selected the group with ID: {group_id}"
+    # )
+    # Import the FSM state where the message_id is stored
+
+    # Get FSMContext for this user
+    state = FSMContext.from_user(callback.from_user.id, callback.bot)
+
+    # Retrieve the message_id to forward from FSM state
+    data = await state.get_data()
+    message_id = data.get("message_id_to_forward")
+    if not message_id:
+        await callback.message.answer("No message to forward found in state.")
+        return
+
+    # Forward the message to the selected group
+    try:
+        await callback.bot.forward_message(
+            chat_id=group_id,
+            from_chat_id=callback.message.chat.id,
+            message_id=message_id
+        )
+        await callback.message.answer("Message forwarded successfully.")
+    except Exception as e:
+        await callback.message.answer(f"Failed to forward message: {e}")
+
