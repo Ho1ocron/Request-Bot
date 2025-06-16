@@ -76,21 +76,37 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     # Retrieve the message_id to forward from FSM state
     data = await state.get_data()
     message_id = data.get("message_id_to_forward")
-    message_id = get_message_to_forward()
+    message_id = get_message_to_forward()[0]
+    to_hide_name = get_message_to_forward()[1]
     if not message_id:
-        await callback.message.answer("No message to forward found in state.")
+        await callback.message.answer("No message to send found.")
         return
 
     # Forward the message to the selected group
+    if to_hide_name:
+        # Get the original message
+        await callback.bot.copy_message(
+            chat_id=group_id,
+            from_chat_id=callback.message.chat.id,
+            message_id=message_id
+        )
+        # Copy the text without sender info
+        # await callback.bot.send_message(
+        #     chat_id=group_id,
+        #     text=original_message.text or "",
+        #     entities=original_message.entities
+        # )
+        await callback.message.answer("Message sent successfully.")
+        return
     try:
         await callback.bot.forward_message(
             chat_id=group_id,
             from_chat_id=callback.message.chat.id,
             message_id=message_id
         )
-        await callback.message.answer("Message forwarded successfully.")
+        await callback.message.answer("Message sent successfully.")
     except Exception as e:
-        await callback.message.answer(f"Failed to forward message: {e}")
+        await callback.message.answer(f"Failed to send message: {e}")
 
     await state.clear()
     await state.set_state(PostStates.waiting_for_post)

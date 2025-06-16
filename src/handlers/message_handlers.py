@@ -4,12 +4,10 @@ from aiogram.types import Message
 from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
 from database.actions import create_user, get_users_groups, get_user, get_group
-from keyboards import main_keyboard, user_help_keyboard, choose_channel
-from states import PostStates, set_message_to_forward
+from keyboards import main_keyboard, user_help_keyboard
+from states import PostStates, set_message_to_forward, set_hide_name
 from aiogram.fsm.context import FSMContext
-from aiogram import Bot
 import logging
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
@@ -44,7 +42,10 @@ async def handler(message: Message, command: CommandObject, state: FSMContext) -
     await message.answer(
         (
             f"✅ Now, you can send your posts to this channel: "
-            f"channel name" #: Добавить название тгк сюда, куда юзер будет кидать посты
+            f"channel name\n\n" #: Добавить название тгк сюда, куда юзер будет кидать посты
+            f"Attention! By default, the bot will send your posts to the channel without hiding your name.\n\n"
+            f"If you want to hide your name, use the command /hide_name.\n\n"
+            f"To unhide it, use the command /unhide_name.\n\n"
         )
     )
 
@@ -114,6 +115,25 @@ async def test(message: Message) -> None:
             f"groups: {user.list_of_channels}"
         )
     )
+
+
+@router.message(Command(commands=["hide_name"]))
+async def hide_name(message: Message) -> None:
+    set_hide_name(True)
+    await message.answer(
+        (
+            "✅ From now on, your name will be hidden when you send posts to the channel."
+        )
+    )
+@router.message(Command(commands=["unhide_name"]))
+async def unhide_name(message: Message) -> None:
+    set_hide_name(False)
+    await message.answer(
+        (
+            "✅ From now on, your name will be visible when you send posts to the channel."
+        )
+    )
+
 
 @router.message(PostStates.waiting_for_post, ~F.text.startswith("/"))
 async def receive_post(message: Message, state: FSMContext) -> None:    

@@ -13,6 +13,17 @@ class GroupCallback(CallbackData, prefix="group"):
 
 
 message_to_forward: int | None
+to_hide_name: bool = False
+
+
+def set_hide_name(hide: bool) -> None:
+    global to_hide_name
+    to_hide_name = hide
+
+
+def get_hide_name() -> bool:
+    global to_hide_name
+    return to_hide_name
 
 
 def set_message_to_forward(message_id: int | None) -> None:
@@ -20,6 +31,7 @@ def set_message_to_forward(message_id: int | None) -> None:
     message_to_forward = message_id
 
 
-def get_message_to_forward() -> int | None:
-    global message_to_forward
-    return message_to_forward
+
+def get_message_to_forward() -> tuple[int, bool] | None:
+    global message_to_forward, to_hide_name
+    return message_to_forward, to_hide_name
