@@ -1,3 +1,4 @@
+from email import message
 from aiogram import F, Router
 from aiogram.filters import Command, CommandStart, CommandObject
 from aiogram.types import Message
@@ -5,10 +6,13 @@ from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
 from database.actions import create_user, get_users_groups, get_user, get_group
 from keyboards import main_keyboard, user_help_keyboard
-from states import PostStates, set_message_to_forward, set_hide_name
 from aiogram.fsm.context import FSMContext
 import logging
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram import types
+from typing import List, Union
+from aiogram_media_group import media_group_handler
+from states import save_media_group_messages, set_hide_name, set_message_to_forward, PostStates
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -135,7 +139,7 @@ async def unhide_name(message: Message) -> None:
     )
 
 
-@router.message(PostStates.waiting_for_post, ~F.text.startswith("/"))
+@router.message(PostStates.waiting_for_post, ~F.text.startswith("/"), ~F.media_group_id)
 async def receive_post(message: Message, state: FSMContext) -> None:    
     user_groups = await get_users_groups(user_id=int(message.from_user.id))
     user_groups_ids = await get_users_groups(user_id=int(message.from_user.id), send_id=True)
@@ -161,3 +165,28 @@ async def receive_post(message: Message, state: FSMContext) -> None:
     await state.clear()
     await state.set_state(PostStates.waiting_for_post)
     
+
+@router.message(PostStates.waiting_for_post, ~F.text.startswith("/"), F.media_group_id)
+@media_group_handler # Copied from https://github.com/deptyped/aiogram-media-group It just works and I dont't give a thing why. 
+async def album_handler(messages: List[Message], state: FSMContext) -> None:
+    user_groups = await get_users_groups(user_id=int(messages[0].from_user.id))
+    user_groups_ids = await get_users_groups(user_id=int(messages[0].from_user.id), send_id=True)
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}")]
+            for group, group_id in zip(user_groups, user_groups_ids)
+        ] + [
+            [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel")]
+        ]
+    )
+    await messages[-1].answer(
+        "Please select a channel:",
+        reply_markup=keyboard
+    )
+    
+    save_media_group_messages(_media_group=messages)
+    print(messages[0].message_id)
+    print(messages[0].chat.id)
+
+    await state.clear()
+    await state.set_state(PostStates.waiting_for_post)
