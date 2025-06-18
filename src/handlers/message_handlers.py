@@ -167,7 +167,7 @@ async def receive_post(message: Message, state: FSMContext) -> None:
     
 
 @router.message(PostStates.waiting_for_post, ~F.text.startswith("/"), F.media_group_id)
-@media_group_handler # Copied from https://github.com/deptyped/aiogram-media-group It just works and I dont't give a thing why. 
+@media_group_handler # Copied and imported as lib from https://github.com/deptyped/aiogram-media-group It just works. 
 async def album_handler(messages: List[Message], state: FSMContext) -> None:
     user_groups = await get_users_groups(user_id=int(messages[0].from_user.id))
     user_groups_ids = await get_users_groups(user_id=int(messages[0].from_user.id), send_id=True)
@@ -185,8 +185,6 @@ async def album_handler(messages: List[Message], state: FSMContext) -> None:
     )
     
     save_media_group_messages(_media_group=messages)
-    print(messages[0].message_id)
-    print(messages[0].chat.id)
 
     await state.clear()
     await state.set_state(PostStates.waiting_for_post)

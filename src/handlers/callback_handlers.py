@@ -62,7 +62,6 @@ async def forwarding(callback: CallbackQuery, callback_data: GroupCallback):
 @router.callback_query(F.data.startswith("select_group:"))
 async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     group_id = callback.data.split(":")[1]
-    print(f"Selected group ID: {group_id}")
     # Here you would typically handle the selection of the group, e.g., store it in the database or state
     # For now, we just acknowledge the selection
     # await callback.answer(f"Selected group ID: {group_id}")
@@ -103,7 +102,6 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
         set_message_to_forward(None)  # Clear the message to forward
         await state.clear()
         await state.set_state(PostStates.waiting_for_post)
-        print(message_id, group_id)
         return
     # copied_ids = []
     # for media in media_group:
@@ -115,7 +113,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     #     copied_ids.append(copied.message_id)
     _media_group = []
     for idx, msg in enumerate(media_group):
-        caption = msg.caption if idx == 0 else None # Only the first message in the media group should have a caption and I should fix it so there is always captions
+        caption = msg.caption if msg.caption is not None else None # Only the first message in the media group should have a caption and I should fix it so there is always captions
         if msg.photo:
             file_id = msg.photo[-1].file_id
             _media_group.append(InputMediaPhoto(media=file_id, caption=caption))
@@ -125,17 +123,20 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
         elif msg.document:
             file_id = msg.document.file_id
             _media_group.append(InputMediaDocument(media=file_id, caption=caption))
-        elif msg.animation:
-            file_id = msg.animation.file_id
-            _media_group.append(InputMediaAnimation(media=file_id, caption=caption))
-
-    if _media_group:
-        await callback.bot.send_media_group(
-            chat_id=group_id,
-            media=_media_group
-        )
-    set_message_to_forward(None)  # Clear the message to forward
-    save_media_group_messages(None)  # Clear the media group messages
-    await callback.message.answer("Your post sent successfully.")
-    await state.clear()
-    await state.set_state(PostStates.waiting_for_post)
+        # elif msg.animation:
+        #     file_id = msg.animation.file_id
+        #     _media_group.append(InputMediaAnimation(media=file_id, caption=caption))
+    try:
+        if _media_group:
+            await callback.bot.send_media_group(
+                chat_id=group_id,
+                media=_media_group
+            )
+            await callback.message.answer("Your post sent successfully.")
+    except Exception as e:
+        await callback.message.answer(f"Error occurred while sending media group: {e}")
+    finally:
+        set_message_to_forward(None)  # Clear the message to forward
+        save_media_group_messages(None)  # Clear the media group messages
+        await state.clear()
+        await state.set_state(PostStates.waiting_for_post)
