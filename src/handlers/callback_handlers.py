@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from database.actions import create_group
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InputMediaAnimation, InputMediaDocument, InputMediaPhoto, InputMediaVideo 
+from aiogram.types import InputMediaAnimation, InputMediaDocument, InputMediaPhoto, InputMediaVideo, InputMediaAudio
 from states import PostStates, GroupCallback, get_message_to_forward, set_message_to_forward, get_media_group_messages, save_media_group_messages
 
 
@@ -112,7 +112,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     #     )
     #     copied_ids.append(copied.message_id)
     _media_group = []
-    for idx, msg in enumerate(media_group):
+    for msg in enumerate(media_group):
         caption = msg.caption if msg.caption is not None else None # Only the first message in the media group should have a caption and I should fix it so there is always captions
         if msg.photo:
             file_id = msg.photo[-1].file_id
