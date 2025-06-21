@@ -174,3 +174,5 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     finally:
         set_message_to_forward(None)  # Clear the message to forward
         save_media_group_messages(None)  # Clear the media group messages
+
+# id to add: Add source from which the message was sent, so that it can be used in the caption.
