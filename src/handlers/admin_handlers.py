@@ -4,7 +4,7 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from settings import ADMIN_IDS
 from database.actions import close_db, init_db
-from states import save_media_group_messages, set_hide_name, set_message_to_forward, PostStates
+from states import save_media_group_messages, set_hide_name, set_message_to_forward
 
 
 router = Router(name=__name__)
