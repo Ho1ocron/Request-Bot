@@ -27,17 +27,7 @@ async def handler(message: Message, command: CommandObject, state: FSMContext) -
     username = message.from_user.first_name
     
     await create_user(user_id=user_id, username=username, group_id=group_id)
-    groups = await get_users_groups(user_id=user_id)
-    group = await get_group(group_id=group_id)
     await state.set_state(PostStates.waiting_for_post)
-    if group.name in groups:
-        await message.answer(
-            (
-                "You're already in, buddy!"
-            )
-        )
-        return
-    
     await message.answer(
         (
             f"✅ Now, you can send your posts to this channel: "
