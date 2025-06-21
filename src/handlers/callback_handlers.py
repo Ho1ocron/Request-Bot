@@ -149,6 +149,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
         if caption == max_len_caption:
             caption += extr_caption
         if msg.photo: # Пофиксить чтобы фотки были в правильном порядке, а не в рандомном через insert() если есть подпись.
+            # Эта часть кода должна быть исправлена, чтобы использовать правильный порядок фотографий через .sort() по id
             file_id = msg.photo[-1].file_id
             _media_group.append(InputMediaPhoto(media=file_id, caption=caption))
         elif msg.video:
