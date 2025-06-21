@@ -143,8 +143,11 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     user_id = callback.message.chat.id
     user = await get_user(user_id=user_id)
     extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.name}</a>'
+    max_len_caption = max(media_group, key=lambda x: len(x.caption) if x.caption else 0).caption if media_group else None
     for idx, msg in enumerate(media_group):
         caption = msg.caption if msg.caption is not None else None # Only the first message in the media group should have a caption and I should fix it so there is always captions
+        if caption == max_len_caption:
+            caption += extr_caption
         if msg.photo: # Пофиксить чтобы фотки были в правильном порядке, а не в рандомном через insert() если есть подпись.
             file_id = msg.photo[-1].file_id
             _media_group.append(InputMediaPhoto(media=file_id, caption=caption))
@@ -159,7 +162,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
         #     _media_group.append(InputMediaAnimation(media=file_id, caption=caption))
     try:
         if _media_group:
-            _media_group[0].caption = _media_group[0].caption + extr_caption if _media_group[0].caption else extr_caption
+            # _media_group[0].caption = _media_group[0].caption + extr_caption if _media_group[0].caption else extr_caption
             await callback.bot.send_media_group(
                 chat_id=group_id,
                 media=_media_group
