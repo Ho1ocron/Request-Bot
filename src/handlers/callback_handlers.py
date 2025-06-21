@@ -116,8 +116,11 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     max_len_caption = max(media_group, key=lambda x: len(x.caption) if x.caption else 0).caption
     for idx, msg in enumerate(media_group):
         caption = msg.caption if msg.caption is not None else None # Only the first message in the media group should have a caption and I should fix it so there is always captions
-        if caption == max_len_caption:
+        if caption == max_len_caption and caption != None:
             caption += extr_caption
+        else:
+            if idx == 0:
+                caption = extr_caption
         if msg.photo: # Пофиксить чтобы фотки были в правильном порядке, а не в рандомном через insert() если есть подпись.
             # Эта часть кода должна быть исправлена, чтобы использовать правильный порядок фотографий через .sort() по id
             file_id = msg.photo[-1].file_id
@@ -141,8 +144,8 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
             await callback.message.answer("Your post sent successfully.")
     except Exception as e:
         await callback.message.answer(f"Error occurred while sending media group: {e}")
-    finally:
-        set_message_to_forward(None)  # Clear the message to forward
-        save_media_group_messages(None)  # Clear the media group messages
+    # finally:
+        # set_message_to_forward(None)  # Clear the message to forward
+        # save_media_group_messages(None)  # Clear the media group messages
 
 # id to add: Add source from which the message was sent, so that it can be used in the caption.
