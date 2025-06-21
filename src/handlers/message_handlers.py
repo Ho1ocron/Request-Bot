@@ -19,8 +19,6 @@ logger = logging.getLogger(__name__)
 router = Router(name=__name__)
 router.message.filter(F.chat.type.in_({ChatType.PRIVATE}),)
 
-bot_name: str
-
 
 @router.message(CommandStart(deep_link=True))
 async def handler(message: Message, command: CommandObject, state: FSMContext) -> None:
@@ -54,7 +52,9 @@ async def handler(message: Message, command: CommandObject, state: FSMContext) -
 
 @router.message(Command(commands=["start"]))
 async def start(message: Message) -> None:
+    bot_name = await message.bot.get_me()
     keyboard = main_keyboard(bot_name=bot_name.username)
+    print(f"Bot name: {bot_name.username}")  # Debugging line to check bot name
     #builder = InlineKeyboardBuilder()
     #builder.row(types.InlineKeyboardButton(text="📎 Add to your group", url=""))
     # -> keyboards.py
@@ -185,3 +185,9 @@ async def album_handler(messages: List[Message], state: FSMContext) -> None:
 
     await state.clear()
     await state.set_state(PostStates.waiting_for_post)
+
+
+@router.message(Command("status"))
+async def check_fsm_state(message: Message, state: FSMContext) -> None:
+    current_state = await state.get_state()
+    await message.answer(f"Your current FSM state is: {current_state}")
