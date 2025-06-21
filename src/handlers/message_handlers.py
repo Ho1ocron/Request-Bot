@@ -75,7 +75,7 @@ async def channels(message: Message) -> None:
     groups = await get_users_groups(user_id=int(message.from_user.id))
     await message.answer(
         (
-            f"Channels: {", ".join(groups)}"
+            f"Channels available for you: {", ".join(groups)}"
         )
     )
 
