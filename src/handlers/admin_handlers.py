@@ -1,6 +1,7 @@
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import Message
+from aiogram.fsm.context import FSMContext
 from settings import ADMIN_IDS
 from database.actions import close_db, init_db
 
@@ -28,3 +29,9 @@ async def closeDB(message: Message) -> None:
 async def initDB(message: Message) -> None:
     await init_db()
     await message.answer("Database inited.")
+
+
+@router.message(Command("status"))
+async def check_fsm_state(message: Message, state: FSMContext) -> None:
+    current_state = await state.get_state()
+    await message.answer(f"Your current FSM state is: {current_state}")

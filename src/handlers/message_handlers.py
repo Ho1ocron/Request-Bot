@@ -186,8 +186,3 @@ async def album_handler(messages: List[Message], state: FSMContext) -> None:
     await state.clear()
     await state.set_state(PostStates.waiting_for_post)
 
-
-@router.message(Command("status"))
-async def check_fsm_state(message: Message, state: FSMContext) -> None:
-    current_state = await state.get_state()
-    await message.answer(f"Your current FSM state is: {current_state}")
