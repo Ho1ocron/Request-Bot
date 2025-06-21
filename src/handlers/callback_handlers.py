@@ -63,20 +63,9 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     # Here you would typically handle the selection of the group, e.g., store it in the database or state
     # For now, we just acknowledge the selection
     # await callback.answer(f"Selected group ID: {group_id}")
-    
-    # Optionally, you can send a confirmation message to the user
-    # await callback.message.answer(
-    #     f"You have selected the group with ID: {group_id}"
-    # )
-    # Import the FSM state where the message_id is s`tored
-
-    # Get FSMContext for this user
-
     # Retrieve the message_id to forward from FSM state
-    data = await state.get_data()
     # message_id = data.get("message_id_to_forward")
     message = get_message_to_forward()[0]
-    to_hide_name = get_message_to_forward()[1]
     media_group = get_media_group_messages()
     media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id
     user_id = callback.message.chat.id
@@ -85,7 +74,6 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     if not message and not media_group:
         await callback.message.answer("No message to send found.")
         return
-    to_hide_name = True
     # Forward the message to the selected group
     if not media_group:
         message_text = message.caption or message.text or ""
@@ -120,25 +108,9 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
                 animation=message.animation.file_id,
                 caption=message_text,
             )
-        # If you want to copy the text without sender info, uncomment the following lines
-    
-        # Copy the text without sender info
-        # await callback.bot.send_message(
-        #     chat_id=group_id,
-        #     text=original_message.text or "",
-        #     entities=original_message.entities
-        # )
         await callback.message.answer("Your post sent successfully.")
         set_message_to_forward(None)  # Clear the message to forward
         return
-    # copied_ids = []
-    # for media in media_group:
-    #     copied = await callback.bot.copy_message(
-    #         chat_id=group_id,
-    #         from_chat_id=media.chat.id,
-    #         message_id=media.message_id
-    #     )
-    #     copied_ids.append(copied.message_id)
     _media_group = []
     user_id = callback.message.chat.id
     user = await get_user(user_id=user_id)
