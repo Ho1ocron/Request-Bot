@@ -1,6 +1,6 @@
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
-from database.actions import create_group
+from database.actions import create_group, get_user
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InputMediaAnimation, InputMediaDocument, InputMediaPhoto, InputMediaVideo 
 from states import PostStates, GroupCallback, get_message_to_forward, set_message_to_forward, get_media_group_messages, save_media_group_messages
@@ -74,22 +74,53 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
 
     # Retrieve the message_id to forward from FSM state
     data = await state.get_data()
-    message_id = data.get("message_id_to_forward")
-    message_id = get_message_to_forward()[0]
+    # message_id = data.get("message_id_to_forward")
+    message = get_message_to_forward()[0]
     to_hide_name = get_message_to_forward()[1]
     media_group = get_media_group_messages()
-    if not message_id and not media_group:
+    user_id = callback.message.chat.id
+    user = await get_user(user_id=user_id)
+    extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.name}</a>'
+    if not message and not media_group:
         await callback.message.answer("No message to send found.")
         return
     to_hide_name = True
     # Forward the message to the selected group
     if not media_group:
+        message_text = message.caption or message.text or ""
+        message_text += extr_caption
         # Get the original message
-        await callback.bot.copy_message(
-            chat_id=group_id,
-            from_chat_id=callback.message.chat.id,
-            message_id=message_id
-        )
+        if message.text:
+            await callback.bot.send_message(
+                chat_id=group_id,
+                text=message_text,
+            )
+        elif message.photo:
+            await callback.bot.send_photo(
+                chat_id=group_id,
+                photo=message.photo[-1].file_id,
+                caption=message_text,
+            )
+        elif message.video:
+            await callback.bot.send_video(
+                chat_id=group_id,
+                video=message.video.file_id,
+                caption=message_text,
+            )
+        elif message.document:
+            await callback.bot.send_document(
+                chat_id=group_id,
+                document=message.document.file_id,
+                caption=message_text,
+            )
+        elif message.animation:
+            await callback.bot.send_animation(
+                chat_id=group_id,
+                animation=message.animation.file_id,
+                caption=message_text,
+            )
+        # If you want to copy the text without sender info, uncomment the following lines
+    
         # Copy the text without sender info
         # await callback.bot.send_message(
         #     chat_id=group_id,
@@ -108,8 +139,15 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     #     )
     #     copied_ids.append(copied.message_id)
     _media_group = []
+    user_id = callback.message.chat.id
+    user = await get_user(user_id=user_id)
+    extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.name}</a>'
     for idx, msg in enumerate(media_group):
         caption = msg.caption if msg.caption is not None else None # Only the first message in the media group should have a caption and I should fix it so there is always captions
+        if idx == 0 and caption is not None:
+            caption += extr_caption
+        elif idx == 0 and caption is None:
+            caption = extr_caption
         if msg.photo:
             file_id = msg.photo[-1].file_id
             _media_group.append(InputMediaPhoto(media=file_id, caption=caption))
