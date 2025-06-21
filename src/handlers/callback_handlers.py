@@ -50,8 +50,6 @@ async def Cancel_sending(callback: CallbackQuery, state: FSMContext) -> None:
     )
     set_message_to_forward(None)  # Clear the message to forward
     save_media_group_messages(None) # Clear the media group messages
-    await state.clear()
-    await state.set_state(PostStates.waiting_for_post)
 
 
 @router.callback_query(GroupCallback.filter())
@@ -100,8 +98,6 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
         # )
         await callback.message.answer("Your post sent successfully.")
         set_message_to_forward(None)  # Clear the message to forward
-        await state.clear()
-        await state.set_state(PostStates.waiting_for_post)
         return
     # copied_ids = []
     # for media in media_group:
@@ -138,5 +134,3 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     finally:
         set_message_to_forward(None)  # Clear the message to forward
         save_media_group_messages(None)  # Clear the media group messages
-        await state.clear()
-        await state.set_state(PostStates.waiting_for_post)

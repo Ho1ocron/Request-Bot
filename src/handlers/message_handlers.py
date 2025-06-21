@@ -159,8 +159,6 @@ async def receive_post(message: Message, state: FSMContext) -> None:
     #         "✅ Choose a channel where you want to send your post:"
     #     )
     # )
-    await state.clear()
-    await state.set_state(PostStates.waiting_for_post)
     
 
 @router.message(PostStates.waiting_for_post, ~F.text.startswith("/"), F.media_group_id)
@@ -182,7 +180,3 @@ async def album_handler(messages: List[Message], state: FSMContext) -> None:
     )
     
     save_media_group_messages(_media_group=messages)
-
-    await state.clear()
-    await state.set_state(PostStates.waiting_for_post)
-
