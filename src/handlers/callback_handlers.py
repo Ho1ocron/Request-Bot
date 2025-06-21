@@ -78,6 +78,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     message = get_message_to_forward()[0]
     to_hide_name = get_message_to_forward()[1]
     media_group = get_media_group_messages()
+    media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id
     user_id = callback.message.chat.id
     user = await get_user(user_id=user_id)
     extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.name}</a>'
@@ -144,11 +145,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.name}</a>'
     for idx, msg in enumerate(media_group):
         caption = msg.caption if msg.caption is not None else None # Only the first message in the media group should have a caption and I should fix it so there is always captions
-        if idx == 0 and caption is not None:
-            caption += extr_caption
-        elif idx == 0 and caption is None:
-            caption = extr_caption
-        if msg.photo:
+        if msg.photo: # Пофиксить чтобы фотки были в правильном порядке, а не в рандомном через insert() если есть подпись.
             file_id = msg.photo[-1].file_id
             _media_group.append(InputMediaPhoto(media=file_id, caption=caption))
         elif msg.video:
@@ -162,6 +159,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
         #     _media_group.append(InputMediaAnimation(media=file_id, caption=caption))
     try:
         if _media_group:
+            _media_group[0].caption = _media_group[0].caption + extr_caption if _media_group[0].caption else extr_caption
             await callback.bot.send_media_group(
                 chat_id=group_id,
                 media=_media_group

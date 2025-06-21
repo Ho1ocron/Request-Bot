@@ -152,7 +152,7 @@ async def receive_post(message: Message, state: FSMContext) -> None:
     #     )
     # )
     
-
+# пофиксить чтобы фотки были в правильном порядке, а не в рандомном
 @router.message(PostStates.waiting_for_post, ~F.text.startswith("/"), F.media_group_id)
 @media_group_handler # Copied and imported as lib from https://github.com/deptyped/aiogram-media-group It just works. 
 async def album_handler(messages: List[Message], state: FSMContext) -> None:
