@@ -4,6 +4,7 @@ from database.actions import create_group, get_user
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InputMediaAnimation, InputMediaDocument, InputMediaPhoto, InputMediaVideo 
 from states import PostStates, GroupCallback, get_message_to_forward, set_message_to_forward, get_media_group_messages, save_media_group_messages
+import asyncio
 
 
 router = Router(name=__name__)
@@ -55,6 +56,16 @@ async def forwarding(callback: CallbackQuery, callback_data: GroupCallback):
     await callback.answer(f"{callback_data.group_name=}")
 
 
+user_timers = {}
+async def timer_action(callback: CallbackQuery, seconds: int, user_id: int) -> None:
+    try:
+        await asyncio.sleep(seconds)  # Timer duration
+        set_message_to_forward(None)  # Clear the message to forward
+        save_media_group_messages(None)  # Clear the media group messages
+    except asyncio.CancelledError:
+        return
+
+
 @router.callback_query(F.data.startswith("select_group:"))
 async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     group_id = callback.data.split(":")[1]
@@ -64,7 +75,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     # Retrieve the message_id to forward from FSM state
     # message_id = data.get("message_id_to_forward")
     message = get_message_to_forward()[0]
-    media_group = get_media_group_messages()
+    media_group = get_media_group_messages() or []
     media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id
     user_id = callback.message.chat.id
     user = await get_user(user_id=user_id)
@@ -107,7 +118,11 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
                 caption=message_text,
             )
         await callback.message.answer("Your post sent successfully.")
-        set_message_to_forward(None)  # Clear the message to forward
+        # asyncio.create_task(start_timer(callback=callback, seconds=10, user_id=user_id))
+        if user_id in user_timers:
+            user_timers[user_id].cancel()
+        task = asyncio.create_task(timer_action(callback=callback, seconds=20, user_id=user_id))
+        user_timers[user_id] = task
         return
     _media_group = []
     user_id = callback.message.chat.id
@@ -144,8 +159,14 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
             await callback.message.answer("Your post sent successfully.")
     except Exception as e:
         await callback.message.answer(f"Error occurred while sending media group: {e}")
-    # finally:
+    finally:
+        if user_id in user_timers:
+            user_timers[user_id].cancel()
+        task = asyncio.create_task(timer_action(callback=callback, seconds=20, user_id=user_id))
+        user_timers[user_id] = task
+    #     asyncio.create_task(start_timer(callback=callback, seconds=10, user_id=user_id))  # Start a timer for 10 seconds
         # set_message_to_forward(None)  # Clear the message to forward
         # save_media_group_messages(None)  # Clear the media group messages
 
 # id to add: Add source from which the message was sent, so that it can be used in the caption.
+
