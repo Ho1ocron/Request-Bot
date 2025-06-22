@@ -3,7 +3,8 @@ from aiogram.types import CallbackQuery
 from database.actions import create_group, get_user
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InputMediaAnimation, InputMediaDocument, InputMediaPhoto, InputMediaVideo 
-from states import PostStates, GroupCallback, get_message_to_forward, set_message_to_forward, get_media_group_messages, save_media_group_messages
+from states import PostStates, GroupCallback, bot_state
+from typing import List
 import asyncio
 
 
@@ -47,8 +48,8 @@ async def Cancel_sending(callback: CallbackQuery, state: FSMContext) -> None:
             "Sending cancelled."
         )
     )
-    set_message_to_forward(None)  # Clear the message to forward
-    save_media_group_messages(None) # Clear the media group messages
+    bot_state.set_message_to_forward(None)  # Clear the message to forward
+    bot_state.set_media_group_messages(None) # Clear the media group messages
 
 
 @router.callback_query(GroupCallback.filter())
@@ -56,12 +57,12 @@ async def forwarding(callback: CallbackQuery, callback_data: GroupCallback):
     await callback.answer(f"{callback_data.group_name=}")
 
 
-user_timers = {}
+user_timers = {int: asyncio.Task}
 async def timer_action(callback: CallbackQuery, seconds: int, user_id: int) -> None:
     try:
         await asyncio.sleep(seconds)  # Timer duration
-        set_message_to_forward(None)  # Clear the message to forward
-        save_media_group_messages(None)  # Clear the media group messages
+        bot_state.set_message_to_forward(None)  # Clear the message to forward
+        bot_state.set_media_group_messages(None)  # Clear the media group messages
     except asyncio.CancelledError:
         return
 
@@ -74,8 +75,8 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     # await callback.answer(f"Selected group ID: {group_id}")
     # Retrieve the message_id to forward from FSM state
     # message_id = data.get("message_id_to_forward")
-    message = get_message_to_forward()[0]
-    media_group = get_media_group_messages() or []
+    message = bot_state.get_message_to_forward()
+    media_group = bot_state.get_media_group_messages()
     media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id
     user_id = callback.message.chat.id
     user = await get_user(user_id=user_id)

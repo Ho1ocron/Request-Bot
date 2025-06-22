@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram_media_group import media_group_handler
 from typing import List
-from states import save_media_group_messages, set_hide_name, set_message_to_forward, PostStates
+from states import PostStates, bot_state
 from database.actions import create_user, get_users_groups, get_user, get_group
 from keyboards import main_keyboard, user_help_keyboard
 import logging
@@ -110,7 +110,7 @@ async def test(message: Message) -> None:
 
 @router.message(Command(commands=["hide_name"]))
 async def hide_name(message: Message) -> None:
-    set_hide_name(True)
+    bot_state.set_hide_name(True)
     await message.answer(
         (
             "✅ From now on, your name will be hidden when you send posts to the channel."
@@ -118,7 +118,7 @@ async def hide_name(message: Message) -> None:
     )
 @router.message(Command(commands=["unhide_name"]))
 async def unhide_name(message: Message) -> None:
-    set_hide_name(False)
+    bot_state.set_hide_name(False)
     await message.answer(
         (
             "✅ From now on, your name will be visible when you send posts to the channel."
@@ -140,7 +140,7 @@ async def receive_post(message: Message, state: FSMContext) -> None:
             [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel")]
         ]
     )
-    set_message_to_forward(message=message)
+    bot_state.set_message_to_forward(message=message)
     await message.answer(
         "Please select a channel:",
         reply_markup=keyboard
@@ -171,4 +171,4 @@ async def album_handler(messages: List[Message], state: FSMContext) -> None:
         reply_markup=keyboard
     )
     
-    save_media_group_messages(_media_group=messages)
+    bot_state.set_media_group_messages(media_group=messages)

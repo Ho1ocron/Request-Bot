@@ -1,8 +1,7 @@
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.filters.callback_data import CallbackData
-from aiogram.types import Message
-import asyncio
-from typing import List
+from aiogram.types import Message   
+from typing import List, Optional
 
 class PostStates(StatesGroup):
     waiting_for_post = State()
@@ -13,37 +12,32 @@ class GroupCallback(CallbackData, prefix="group"):
     group_id: int
 
 
-message_to_forward: Message | None = None
-to_hide_name: bool = False
+class BotState:
+    def __init__(self):
+        self._to_hide_name: bool = False
+        self._message_to_forward: Optional[Message] = None
+        self._media_group: List[int] = []
+
+    # Hide name state
+    def set_hide_name(self, hide: bool) -> None:
+        self._to_hide_name = hide
+
+    def get_hide_name(self) -> bool:
+        return self._to_hide_name
+
+    # Message forwarding state
+    def set_message_to_forward(self, message: Optional[Message]) -> None:
+        self._message_to_forward = message
+
+    def get_message_to_forward(self) -> Optional[Message]:
+        return self._message_to_forward
+
+    # Media group state
+    def set_media_group_messages(self, media_group: Optional[List[int]]) -> None:
+        self._media_group = media_group or []
+
+    def get_media_group_messages(self) -> List[int]:
+        return self._media_group
 
 
-def set_hide_name(hide: bool) -> None:
-    global to_hide_name
-    to_hide_name = hide
-
-
-def get_hide_name() -> bool:
-    global to_hide_name
-    return to_hide_name
-
-
-def set_message_to_forward(message: Message | None) -> None:
-    global message_to_forward
-    message_to_forward = message
-
-
-def get_message_to_forward() -> tuple[Message, bool] | tuple[None, None]:
-    global message_to_forward, to_hide_name
-    return message_to_forward, to_hide_name
-
-
-media_group: List[int] = []
-
-
-def save_media_group_messages(_media_group: List[int] | None) -> None:
-    global media_group
-    media_group = _media_group
-
-def get_media_group_messages() -> List[int]:
-    global media_group
-    return media_group
+bot_state = BotState()

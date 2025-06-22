@@ -4,7 +4,7 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from settings import ADMIN_IDS
 from database.actions import close_db, init_db
-from states import save_media_group_messages, set_message_to_forward
+from states import bot_state
 import asyncio
 
 
@@ -43,8 +43,8 @@ async def check_fsm_state(message: Message, state: FSMContext) -> None:
 async def clear_state(message: Message, state: FSMContext) -> None:
     await state.clear()
     await message.answer("✅ Your state has been cleared.")
-    set_message_to_forward(None)
-    save_media_group_messages(None)
+    bot_state.set_message_to_forward(None)
+    bot_state.set_media_group_messages(None)
 
 
 async def timer_action(user_id: int, chat_id: int, message: Message) -> None:
