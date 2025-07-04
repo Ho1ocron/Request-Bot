@@ -12,6 +12,7 @@ from aiogram.enums.chat_member_status import ChatMemberStatus
 router = Router(name=__name__)
 router.message.filter(
     F.chat.type.in_({ChatType.GROUP, ChatType.SUPERGROUP}),
+    F.text.startswith("/"),
 )
 
 

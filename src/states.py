@@ -33,7 +33,7 @@ class BotState:
         return self._message_to_forward
 
     # Media group state
-    def set_media_group_messages(self, media_group: Optional[List[int]]) -> None:
+    def set_media_group_messages(self, media_group: Optional[List[Message]]) -> None:
         self._media_group = media_group or []
 
     def get_media_group_messages(self) -> List[int]:

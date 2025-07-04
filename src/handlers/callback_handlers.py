@@ -2,10 +2,10 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from database.actions import create_group, get_user
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InputMediaAnimation, InputMediaDocument, InputMediaPhoto, InputMediaVideo 
+from aiogram.types import InputMediaAnimation, InputMediaDocument, InputMediaPhoto, InputMediaVideo, Message
 from states import PostStates, GroupCallback, bot_state
 from typing import List
-import asyncio
+from asyncio import Task, CancelledError, sleep as asleep, create_task
 
 
 router = Router(name=__name__)
@@ -57,13 +57,13 @@ async def forwarding(callback: CallbackQuery, callback_data: GroupCallback):
     await callback.answer(f"{callback_data.group_name=}")
 
 
-user_timers = {int: asyncio.Task}
+user_timers = {int: Task}
 async def timer_action(callback: CallbackQuery, seconds: int, user_id: int) -> None:
     try:
-        await asyncio.sleep(seconds)  # Timer duration
+        await asleep(seconds)  # Timer duration
         bot_state.set_message_to_forward(None)  # Clear the message to forward
         bot_state.set_media_group_messages(None)  # Clear the media group messages
-    except asyncio.CancelledError:
+    except CancelledError:
         return
 
 
@@ -76,7 +76,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     # Retrieve the message_id to forward from FSM state
     # message_id = data.get("message_id_to_forward")
     message = bot_state.get_message_to_forward()
-    media_group = bot_state.get_media_group_messages()
+    media_group: List[Message] = bot_state.get_media_group_messages()
     media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id
     user_id = callback.message.chat.id
     user = await get_user(user_id=user_id)
@@ -122,7 +122,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
         # asyncio.create_task(start_timer(callback=callback, seconds=10, user_id=user_id))
         if user_id in user_timers:
             user_timers[user_id].cancel()
-        task = asyncio.create_task(timer_action(callback=callback, seconds=20, user_id=user_id))
+        task = create_task(timer_action(callback=callback, seconds=20, user_id=user_id))
         user_timers[user_id] = task
         return
     _media_group = []
@@ -163,7 +163,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     finally:
         if user_id in user_timers:
             user_timers[user_id].cancel()
-        task = asyncio.create_task(timer_action(callback=callback, seconds=20, user_id=user_id))
+        task = create_task(timer_action(callback=callback, seconds=20, user_id=user_id))
         user_timers[user_id] = task
     #     asyncio.create_task(start_timer(callback=callback, seconds=10, user_id=user_id))  # Start a timer for 10 seconds
         # set_message_to_forward(None)  # Clear the message to forward
