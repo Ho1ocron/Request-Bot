@@ -155,10 +155,11 @@ async def album_handler(messages: List[Message], state: FSMContext) -> None:
     user_groups_ids = await get_users_groups(user_id=int(messages[0].from_user.id), send_id=True)
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}")]
-            for group, group_id in zip(user_groups, user_groups_ids)
-        ] + [
-            [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel")]
+            *[
+                InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}")
+                for group, group_id in zip(user_groups, user_groups_ids)
+            ],
+            InlineKeyboardButton(text="❌ Cancel", callback_data="cancel",)
         ]
     )
     await messages[-1].answer(
