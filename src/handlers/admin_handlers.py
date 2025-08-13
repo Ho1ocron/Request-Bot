@@ -15,23 +15,6 @@ router.message.filter(
 )
 
 
-@router.message(Command(commands=['admin']))
-async def admin(message: Message) -> None:
-    await message.answer('admin')
-
-
-@router.message(Command(commands=["close"]))
-async def closeDB(message: Message) -> None:
-    await close_db()
-    await message.answer("Database closed.")
-
-
-
-@router.message(Command(commands=["init"]))
-async def initDB(message: Message) -> None:
-    await init_db()
-    await message.answer("Database inited.")
-
 
 @router.message(Command("status"))
 async def check_fsm_state(message: Message, state: FSMContext) -> None:
@@ -56,7 +39,7 @@ async def timer_action(user_id: int, chat_id: int, message: Message) -> None:
         print(f"Timer for user {user_id} was cancelled.")
         return
 
-
+# Rewrite timer to saving unix timestamp and then time request - timestamp
 user_timers = {}
 @router.message(Command(commands=["timer"]))
 async def start_timer(message: Message) -> None:
