@@ -100,11 +100,9 @@ async def help(message: Message) -> None:
 async def test(message: Message) -> None:
     user = await get_user(user_id=int(message.from_user.id))
     await message.answer(
-        (
             f"id: {user.id}\n"
             f"username: {user.name}\n"
             f"groups: {user.list_of_channels}"
-        )
     )
 
 
@@ -112,17 +110,14 @@ async def test(message: Message) -> None:
 async def hide_name(message: Message) -> None:
     bot_state.set_hide_name(True)
     await message.answer(
-        (
-            "✅ From now on, your name will be hidden when you send posts to the channel."
-        )
+        "✅ From now on, your name will be hidden when you send posts to the channel."
     )
+
 @router.message(Command(commands=["unhide_name"]))
 async def unhide_name(message: Message) -> None:
     bot_state.set_hide_name(False)
     await message.answer(
-        (
-            "✅ From now on, your name will be visible when you send posts to the channel."
-        )
+        "✅ From now on, your name will be visible when you send posts to the channel."
     )
 
 

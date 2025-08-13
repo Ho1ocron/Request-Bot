@@ -39,7 +39,7 @@ async def check_user_exists(user_id: int) -> bool:
 
 
 async def get_user(user_id: int) -> User:
-    return await User.get(id=user_id)
+    return await User.get(tg_id=user_id)
 
 
 async def create_user(user_id: int, username: str, group_id: int) -> None:
@@ -47,14 +47,14 @@ async def create_user(user_id: int, username: str, group_id: int) -> None:
 
     if not exists:
         user = await User.create(
-            id=user_id,
+            tg_id=user_id,
             name=username,
             list_of_channels=[group_id]
         )
         await user.save()
         return
     
-    user = await User.get(id=user_id)
+    user = await User.get(tg_id=user_id)
     user.name = username
 
     if group_id not in user.list_of_channels:
