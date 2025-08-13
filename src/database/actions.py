@@ -1,7 +1,8 @@
 from settings import TORTOISE_MODELS, DEBUG
 from tortoise import Tortoise
 from tortoise.expressions import Q
-from database.models import User, Group, GroupNotFoundError
+from database.models import User, Group
+from database.exceptions import GroupNotFoundError
 
 
 #------------------------------------------------------------Datavase config-----------------------------------------------------------#
