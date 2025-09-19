@@ -1,1 +1,1 @@
-# This bot dedicated to help you communicate with your Telegram channel followers.
+# This bot is dedicated to help you communicate with your Telegram channel followers.

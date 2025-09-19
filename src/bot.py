@@ -2,19 +2,23 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from asyncio import run
+from settings import TOKEN, ADMIN_IDS
+from database.actions import init_db, close_db
+from aiogram.fsm.storage.redis import RedisStorage
+import redis.asyncio as redis
 import handlers, logging, sys
-from settings import TOKEN
-from database.actions import init_db
 
 
 # Comment
 async def main() -> None:
+    
     bot = Bot(
         TOKEN,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
-
-    dp = Dispatcher()
+    redis_client = redis.Redis(host="localhost", port=6379, db=0)
+    storage = RedisStorage(redis_client)
+    dp = Dispatcher(storage=storage)
     
     dp.include_routers(
         handlers.message_router,
@@ -22,6 +26,7 @@ async def main() -> None:
         handlers.admin_router,
         handlers.group_message_router
     )
+    
     await init_db()
     await dp.start_polling(bot)
 

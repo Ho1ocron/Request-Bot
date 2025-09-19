@@ -1,5 +1,8 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from states import GroupCallback
+from database.actions import get_group
+from asyncio import run
 
 
 #def create_keyboard(text: str, callback_data: Optional[str] = None, url: Optional[str] = None) -> InlineKeyboardBuilder:
@@ -12,9 +15,9 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 #    return InlineKeyboardBuilder().add(*args)
 
 
-def main_keyboard() -> InlineKeyboardBuilder:
+def main_keyboard(bot_name: str) -> InlineKeyboardBuilder:
     return InlineKeyboardBuilder().add(
-        InlineKeyboardButton(text="📎 Add to your group", url="https://t.me/ilovethissomuchbot?startgroup=true")
+        InlineKeyboardButton(text="📎 Add to your group", url=f"https://t.me/{bot_name}?startgroup=true")
     )
 
 
@@ -36,3 +39,21 @@ def group_link_keyboard() -> InlineKeyboardBuilder:
     return InlineKeyboardBuilder().add(
         InlineKeyboardButton(text="📌Generate your custom link", callback_data="custom_link")
     )
+
+
+def group_continue_keyboard() -> InlineKeyboardBuilder:
+    return InlineKeyboardBuilder().add(
+        InlineKeyboardButton(text="Continue ▶️", callback_data="group_continue")
+    )
+
+
+async def choose_channel(groups:list[int]) -> InlineKeyboardMarkup:
+    keyboard = []
+    cancelbtn = [InlineKeyboardButton(text="Cancel", callback_data="cancel")]
+    for _id in groups:
+            
+        group = await get_group(group_id=_id)
+        keyboard.append(
+            InlineKeyboardButton(text=group.name, callback_data=GroupCallback(gropu_id=_id, group_name=group.name).pack())
+        )
+    return InlineKeyboardMarkup(inline_keyboard=[keyboard, cancelbtn])
