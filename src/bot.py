@@ -7,6 +7,7 @@ from settings import TOKEN
 from database.actions import init_db
 
 
+# Comment
 async def main() -> None:
     bot = Bot(
         TOKEN,
