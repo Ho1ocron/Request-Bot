@@ -82,20 +82,14 @@ docker-compose down
 
 ---
 
-├── docker/                # Docker-related configs (optional)
-├── libs/                  # Extra libraries or modules
-├── src/                   # Main source code
-│   ├── bot.py             # Entry point for the bot
-│   ├── config.py
-│   ├── settings.py
-│   ├── states.py
-│   ├── test.py
-│   ├── utils.py
-│   ├── handlers/          # Message handlers
-│   └── database/          # Database models & migrations
-├── .env                   # Environment variables
-├── .gitignore
-├── Dockerfile
+├── app/
+│   ├── bot.py          # Entry point for the bot
+│   ├── handlers/       # Message handlers
+│   ├── models.py       # Tortoise ORM models
+│   ├── services/       # Business logic
+│   └── utils/          # Helper functions
 ├── docker-compose.yml
+├── Dockerfile
 ├── requirements.txt
+├── .env.example
 └── README.md
