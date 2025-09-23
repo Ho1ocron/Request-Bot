@@ -30,8 +30,8 @@ Uses [Tortoise ORM](https://tortoise.github.io/) with **PostgreSQL** for databas
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/yourusername/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/Ho1ocron/Request-Bot.git
+cd Request-Bot
 python -m venv venv
 source venv/bin/activate   # On Linux / Mac
 venv\Scripts\activate      # On Windows
