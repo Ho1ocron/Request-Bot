@@ -93,6 +93,7 @@ docker-compose down
 │   ├── handlers/          # Message handlers
 │   └── database/          # Database models & migrations
 ├── .env                   # Environment variables
+├── .env.example           # Environment variables example
 ├── .gitignore
 ├── Dockerfile
 ├── docker-compose.yml
