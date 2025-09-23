@@ -81,7 +81,7 @@ docker-compose down
 ```
 
 ---
-
+.
 ├── app/
 │   ├── bot.py          # Entry point for the bot
 │   ├── handlers/       # Message handlers
