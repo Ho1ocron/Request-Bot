@@ -81,7 +81,8 @@ docker-compose down
 ```
 
 ---
-.
+## 📂 Project Structure
+```
 ├── app/
 │   ├── bot.py          # Entry point for the bot
 │   ├── handlers/       # Message handlers
@@ -93,3 +94,4 @@ docker-compose down
 ├── requirements.txt
 ├── .env.example
 └── README.md
+```
