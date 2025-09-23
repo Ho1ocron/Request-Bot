@@ -83,8 +83,6 @@ docker-compose down
 ---
 ## 📂 Project Structure
 ```
-├── docker/                # Docker-related configs (optional)
-├── libs/                  # Extra libraries or modules
 ├── src/                   # Main source code
 │   ├── bot.py             # Entry point for the bot
 │   ├── config.py
