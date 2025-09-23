@@ -84,7 +84,7 @@ docker-compose down
 
 ## Database structure
 |id|user_id|username|link|
-|:-|:-----:|:------:|---:|
+|:-:|:-----:|:------:|:---:|
 |1|190345|programmer|groups|
 
 ---
