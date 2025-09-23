@@ -48,7 +48,7 @@ DATABASE_URL=postgres://user:password@db:5432/db_name
 ```
 ---
 
-## 📦 Database
+## 🗃️ Database
 
 ### Run database migrations 
 ```bash
@@ -82,7 +82,7 @@ docker-compose down
 
 ---
 
-## Database structure
+## 🗄️ Database structure
 |id|user_id|username|link|
 |:-:|:-----:|:------:|:---:|
 |1|190345|programmer|groups|
