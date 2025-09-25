@@ -85,7 +85,6 @@ docker-compose down
 ## 🗄️ Database structure
 
 ### 👤 User table
-```
 | id | user_id | username   | name            |
 |:--:|:-------:|:----------:|:---------------:|
 | 1  | U1001   | johndoe    | John Doe        |
@@ -98,10 +97,8 @@ docker-compose down
 | 8  | U1008   | sarahl     | Sarah Lewis     |
 | 9  | U1009   | danielt    | Daniel Taylor   |
 | 10 | U1010   | emilyr     | Emily Robinson  |
-```
 
 ### 👥 Group table
-```
 | id | group_id | group_name      |
 |:--:|:--------:|:---------------:|
 | 1  | G2001    | Admins          |
@@ -114,10 +111,8 @@ docker-compose down
 | 8  | G2008    | Designers       |
 | 9  | G2009    | Testers         |
 | 10 | G2010    | Managers        |
-```
 
 ### 🔄 User to Group table
-```
 | id | user_id | group_id |
 |:--:|:-------:|:--------:|
 | 1  | U1001   | G2001    |
@@ -130,7 +125,6 @@ docker-compose down
 | 8  | U1006   | G2008    |
 | 9  | U1007   | G2009    |
 | 10 | U1008   | G2010    |
-```
 ---
 
 ## 📂 Project Structure
