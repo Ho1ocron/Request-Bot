@@ -2,33 +2,42 @@ from tortoise import Model
 from tortoise.fields import (
     IntField, 
     CharField, 
-    JSONField,
+    ManyToManyRelation,
+    ManyToManyField, 
+    BigIntField,
 )
 
 
 class User(Model):
     id = IntField(pk=True)
-    name = CharField(max_length=256)
-    list_of_channels = JSONField()
-    
-    def __str__(self):
-        return super().__str__()
+    user_id = BigIntField(unique=True)
+    username = CharField(max_length=50, unique=True)
+    name = CharField(max_length=100)
+
+    groups: ManyToManyRelation["Group"] = ManyToManyField(
+        "models.Group", related_name="users"
+    )
     
     class Meta:
         table = "users"
 
+    def __str__(self):
+        return f"User(id={self.id}, username={self.username})"
+
 
 class Group(Model):
     id = IntField(pk=True)
-    name = CharField(max_length=255)
-    admin_list = JSONField()
+    group_id = BigIntField(unique=True)
+    name = CharField(max_length=100)
+
+    users: ManyToManyRelation["User"]
+
+    class Meta:
+        table = "groups" 
 
     def __str__(self):
-        return super().__str__()
+        return f"Group(id={self.id}, name={self.name})"
     
-    class Meta:
-        table = "groups"
-
 
 class GroupNotFoundError(Exception):
     def __init__(self, group_id: int | str) -> None:
