@@ -68,7 +68,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id
     user_id = callback.message.chat.id
     user = await get_user(user_id=user_id)
-    extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.name}</a>'
+    extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.username}</a>'
     if not message and not media_group:
         await callback.message.answer("No message to send found.")
         return
@@ -112,7 +112,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     _media_group = []
     user_id = callback.message.chat.id
     user = await get_user(user_id=user_id)
-    extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.name}</a>'
+    extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.username}</a>'
     max_len_caption = max(media_group, key=lambda x: len(x.caption) if x.caption else 0).caption
     for idx, msg in enumerate(media_group):
         caption = msg.caption if msg.caption is not None else None # Only the first message in the media group should have a caption and I should fix it so there is always captions

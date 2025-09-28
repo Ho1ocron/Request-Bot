@@ -21,17 +21,15 @@ async def close_db() -> None:
 
 
 #------------------------------------------------------------User database-------------------------------------------------------------#
-async def get_users_groups(user_id: int, send_id: bool = False) -> list[str]:
-    user = await User.get_or_none(id=user_id)
-    if not user or not user.list_of_channels:
-        return []  # Return empty list if user doesn't exist or has no groups
-    
-    # Fetch group names based on stored group IDs
+async def get_users_groups(user_id: int, send_id: bool = False) -> list[str|int]:
+    user = await User.get_or_none(user_id=user_id)
+    if not user:
+        return []
+
+    await user.fetch_related("groups")  # load the ManyToMany relation
     if send_id:
-        groups = await Group.filter(id__in=user.list_of_channels).values_list("id", flat=True)
-        return groups
-    groups = await Group.filter(id__in=user.list_of_channels).values_list("name", flat=True)
-    return groups
+        return [group.group_id for group in user.groups]
+    return [group.name for group in user.groups]
 
 
 async def check_user_exists(user_id: int) -> bool:
@@ -39,46 +37,35 @@ async def check_user_exists(user_id: int) -> bool:
 
 
 async def get_user(user_id: int) -> User:
-    return await User.get(id=user_id)
+    return await User.get_or_none(user_id=user_id)
 
 
 async def create_user(user_id: int, username: str, group_id: int) -> None:
-    exists = await check_user_exists(user_id=user_id)
-
-    if not exists:
-        user = await User.create(
-            id=user_id,
-            name=username,
-            list_of_channels=[group_id]
-        )
-        await user.save()
+    user = await User.filter(user_id=user_id).first()
+    group = await Group.get(group_id=group_id)
+    if user:
+        await user.groups.add(group)
+        if user.username != username:
+            user.username = username
+            await user.save()
         return
     
-    user = await User.get(id=user_id)
-    user.name = username
-
-    if group_id not in user.list_of_channels:
-        user.list_of_channels.append(group_id)
-
-    await user.save()
-    
+    user = await User.create(user_id=user_id, username=username)
+    await user.groups.add(group)
+    user.save()
 
 #------------------------------------------------------------Group database-----------------------------------------------------------#
 
 
-async def if_user_in_group(user_id: int, group_id: int) -> bool:
-    group = await Group.get(id=group_id)
-    user = await User.get_or_none(id=user_id)
-    if user in group: return True
-    return False
-
-
-async def check_group_exists(group_id: int) -> bool:
-    return await Group.filter(id=group_id).exists()
+async def is_user_in_group(user_id: int, group_id: int) -> bool:
+    user = await User.get_or_none(user_id=user_id)
+    if not user:
+        return False
+    return await user.groups.filter(group_id=group_id).exists()
 
 
 async def get_group(group_id: int) -> Group:
-    return await Group.get(id=group_id)
+    return await Group.get(group_id=group_id)
 
 
 async def delete_group(group_id: int) -> str:
@@ -88,26 +75,13 @@ async def delete_group(group_id: int) -> str:
     else:
         raise GroupNotFoundError(group_id=group_id)
 
-async def create_group(
-        group_id: int,
-        group_name: str,
-        admin_list: list, 
-    ) -> None:
-    
-    exists = await check_group_exists(group_id=group_id)
 
-    if not exists:
-        group = await Group.create(
-            id=group_id,
-            name=group_name,
-            admin_list=admin_list,
-        )
-        await group.save()
-        return
-    
-    group = await Group.get(id=group_id)
-    group.name = group_name
-    group.admin_list += admin_list
+async def create_group(group_id: int, name: str) -> None:
+    group = await Group.filter(group_id=group_id).first()
 
-    await group.save()
-
+    if group:
+        if group.name != name:
+            group.name = name
+            await group.save()
+    else:
+        await Group.create(group_id=group_id, name=name)

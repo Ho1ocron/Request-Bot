@@ -4,7 +4,7 @@ from aiogram.enums.content_type import ContentType
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.utils.deep_linking import create_start_link
-from database.actions import create_group
+from database import create_group
 from aiogram.types import ChatMemberUpdated
 from aiogram.enums.chat_member_status import ChatMemberStatus
 
@@ -25,7 +25,7 @@ async def bot_added_to_group(message: Message) -> None:
     group_name = message.chat.title
     link = await create_start_link(bot=message.bot, payload=group_id, encode=True) #: sending диклинк
 
-    await create_group(group_id=group_id, group_name=group_name, admin_list=[])
+    await create_group(group_id=group_id, name=group_name)
     
     await message.answer(
         (

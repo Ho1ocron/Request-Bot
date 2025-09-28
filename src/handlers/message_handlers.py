@@ -8,7 +8,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram_media_group import media_group_handler
 from typing import List
 from states import save_media_group_messages, set_hide_name, set_message_to_forward, PostStates
-from database.actions import create_user, get_users_groups, get_user, get_group
+from database import create_user, get_users_groups, get_user
 from keyboards import main_keyboard, user_help_keyboard
 import logging
 

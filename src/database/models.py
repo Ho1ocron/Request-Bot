@@ -12,7 +12,6 @@ class User(Model):
     id = IntField(pk=True)
     user_id = BigIntField(unique=True)
     username = CharField(max_length=50, unique=True)
-    name = CharField(max_length=100)
 
     groups: ManyToManyRelation["Group"] = ManyToManyField(
         "models.Group", related_name="users"

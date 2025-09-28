@@ -6,10 +6,8 @@ from database.actions import (
     get_user,
     create_user,
     # delete_user,
-    if_user_in_group,
-    check_group_exists,
+    is_user_in_group,
     get_group,
     delete_group,
     create_group,
-
 )
