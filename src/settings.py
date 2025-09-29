@@ -29,6 +29,6 @@ DB_PASS = getenv('DB_PASS')
 
 DB_NAME = getenv('DB_NAME')
 
-DEBUG = getenv('DEBUG')
+DEBUG = literal_eval(getenv('DEBUG'))
 
 TORTOISE_MODELS = ['database.models']

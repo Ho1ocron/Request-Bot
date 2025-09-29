@@ -24,9 +24,9 @@ router.message.filter(F.chat.type.in_({ChatType.PRIVATE}),)
 async def handler(message: Message, command: CommandObject, state: FSMContext) -> None:
     group_id = int(decode_payload(command.args))
     user_id = int(message.from_user.id)
-    username = message.from_user.first_name
+    name = message.from_user.first_name
     
-    await create_user(user_id=user_id, username=username, group_id=group_id)
+    await create_user(user_id=user_id, name=name, group_id=group_id)
     await state.set_state(PostStates.waiting_for_post)
     await message.answer(
         (

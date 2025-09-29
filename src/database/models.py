@@ -21,7 +21,7 @@ class User(Model):
         table = "users"
 
     def __str__(self):
-        return f"User(id={self.id}, username={self.name})"
+        return f"User(id={self.id}, name={self.name})"
 
 
 class Group(Model):
