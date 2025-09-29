@@ -11,7 +11,7 @@ from tortoise.fields import (
 class User(Model):
     id = IntField(pk=True)
     user_id = BigIntField(unique=True)
-    username = CharField(max_length=50, unique=True)
+    name = CharField(max_length=50, unique=True)
 
     groups: ManyToManyRelation["Group"] = ManyToManyField(
         "models.Group", related_name="users"
@@ -21,7 +21,7 @@ class User(Model):
         table = "users"
 
     def __str__(self):
-        return f"User(id={self.id}, username={self.username})"
+        return f"User(id={self.id}, username={self.name})"
 
 
 class Group(Model):
