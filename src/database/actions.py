@@ -22,14 +22,12 @@ async def init_db() -> None:
             modules={'models': TORTOISE_MODELS},
         )
         await Tortoise.generate_schemas()
-        print(DEBUG)
     else:
         await Tortoise.init(
             # postgres://myuser:mypassword@localhost:5432/mydb
             db_url=f"postgres://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
             modules={'models': TORTOISE_MODELS},
         )
-        print("Postgresql")
         await Tortoise.generate_schemas()
     return
 
