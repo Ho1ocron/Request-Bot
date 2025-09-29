@@ -22,7 +22,7 @@ Uses [Tortoise ORM](https://tortoise.github.io/) with **PostgreSQL** for databas
 - **Python 3.10+**  
 - [Aiogram](https://github.com/aiogram/aiogram) – Telegram bot framework  
 - [Tortoise ORM](https://tortoise.github.io/) – Async ORM  
-- **PostgreSQL** – Database  
+- [PostgreSQL](https://www.postgresql.org/) – Database  
 
 ---
 
