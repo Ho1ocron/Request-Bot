@@ -1,8 +1,8 @@
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import Message
-import asyncio
 from typing import List
+
 
 class PostStates(StatesGroup):
     waiting_for_post = State()
