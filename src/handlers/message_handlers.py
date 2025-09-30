@@ -8,7 +8,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram_media_group import media_group_handler
 from typing import List
 from states import save_media_group_messages, set_hide_name, set_message_to_forward, PostStates
-from database import create_user, get_users_groups, get_user
+from database import create_user, get_users_groups, get_user, get_group
 from keyboards import main_keyboard, user_help_keyboard
 import logging
 
@@ -25,13 +25,13 @@ async def handler(message: Message, command: CommandObject, state: FSMContext) -
     group_id = int(decode_payload(command.args))
     user_id = int(message.from_user.id)
     name = message.from_user.first_name
-    
+
+    group = await get_group(group_id=group_id)
     await create_user(user_id=user_id, name=name, group_id=group_id)
     await state.set_state(PostStates.waiting_for_post)
     await message.answer(
         (
-            f"✅ Now, you can send your posts to this channel: "
-            f"channel name\n\n" #: Добавить название тгк сюда, куда юзер будет кидать посты
+            f"✅ Now, you can send your posts to this channel: <b>{group.name}</b>!\n\n"
             f"Attention! By default, the bot will send your posts to the channel without hiding your name.\n\n"
             f"If you want to hide your name, use the command /hide_name.\n\n"
             f"To unhide it, use the command /unhide_name.\n\n"
