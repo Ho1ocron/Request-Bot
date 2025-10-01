@@ -28,7 +28,7 @@ async def handler(message: Message, command: CommandObject, state: FSMContext) -
 
     group = await get_group(group_id=group_id)
     await create_user(user_id=user_id, name=name, group_id=group_id)
-    await state.set_state(PostStates.waiting_for_post)
+    # await state.set_state(PostStates.waiting_for_post)
     await message.answer(
         (
             f"✅ Now, you can send your posts to this channel: <b>{group.name}</b>!\n\n"
@@ -40,14 +40,10 @@ async def handler(message: Message, command: CommandObject, state: FSMContext) -
 
 
 
-@router.message(Command(commands=["start"]))
+@router.message(Command(commands=["start"]))    
 async def start(message: Message) -> None:
     bot_name = await message.bot.get_me()
     keyboard = main_keyboard(bot_name=bot_name.username)
-    print(f"Bot name: {bot_name.username}")  # Debugging line to check bot name
-    #builder = InlineKeyboardBuilder()
-    #builder.row(types.InlineKeyboardButton(text="📎 Add to your group", url=""))
-    # -> keyboards.py
 
     await message.answer(
         (
@@ -126,11 +122,10 @@ async def unhide_name(message: Message) -> None:
     )
 
 
-@router.message(PostStates.waiting_for_post, ~F.text.startswith("/"), ~F.media_group_id)
+@router.message(~F.text.startswith("/"), ~F.media_group_id)
 async def receive_post(message: Message, state: FSMContext) -> None:    
     user_id = int(message.from_user.id)
-    user_groups = await get_users_groups(user_id=user_id)
-    user_groups_ids = await get_users_groups(user_id=user_id, send_id=True)
+    user_groups, user_groups_ids = await get_users_groups(user_id=user_id)
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}")]
@@ -155,8 +150,7 @@ async def receive_post(message: Message, state: FSMContext) -> None:
 @router.message(PostStates.waiting_for_post, ~F.text.startswith("/"), F.media_group_id)
 @media_group_handler # Copied and imported as lib from https://github.com/deptyped/aiogram-media-group It just works. 
 async def album_handler(messages: List[Message], state: FSMContext) -> None:
-    user_groups = await get_users_groups(user_id=int(messages[0].from_user.id))
-    user_groups_ids = await get_users_groups(user_id=int(messages[0].from_user.id), send_id=True)
+    user_groups, user_groups_ids = await get_users_groups(user_id=int(messages[0].from_user.id))
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}")]

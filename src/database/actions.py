@@ -37,15 +37,12 @@ async def close_db() -> None:
 
 
 #------------------------------------------------------------User database-------------------------------------------------------------#
-async def get_users_groups(user_id: int, send_id: bool = False) -> list[str|int]:
+async def get_users_groups(user_id: int) -> tuple[list[str], list[int]]:
     user = await User.get_or_none(user_id=user_id)
     if not user:
-        return []
-
+        return ([], [])
     await user.fetch_related("groups")  # load the ManyToMany relation
-    if send_id:
-        return [group.group_id for group in user.groups]
-    return [group.name for group in user.groups]
+    return ([group.name for group in user.groups], [group.group_id for group in user.groups])
 
 
 async def check_user_exists(user_id: int) -> bool:
