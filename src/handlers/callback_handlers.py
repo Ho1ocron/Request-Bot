@@ -62,9 +62,11 @@ async def select_group(callback: CallbackQuery) -> None:
     # await callback.answer(f"Selected group ID: {group_id}")
     # Retrieve the message_id to forward from FSM state
     # message_id = data.get("message_id_to_forward")
+
     message = get_message_to_forward()[0]
     media_group = get_media_group_messages()
-    media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id
+    if media_group is not None:
+        media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id
     user_id = callback.message.chat.id
     user = await get_user(user_id=user_id)
     extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.name}</a>'

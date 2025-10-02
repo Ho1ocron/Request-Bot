@@ -40,7 +40,7 @@ def get_message_to_forward() -> tuple[Message, bool] | tuple[None, None]:
 media_group: List[int] = []
 
 
-def save_media_group_messages(_media_group: List[int] | None) -> None:
+def save_media_group_messages(_media_group: List[Message] | None) -> None:
     global media_group
     media_group = _media_group
 
