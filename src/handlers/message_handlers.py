@@ -3,7 +3,6 @@ from aiogram.filters import Command, CommandStart, CommandObject
 from aiogram.types import Message
 from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
-from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram_media_group import media_group_handler
 from typing import List
@@ -21,7 +20,7 @@ router.message.filter(F.chat.type.in_({ChatType.PRIVATE}),)
 
 
 @router.message(CommandStart(deep_link=True))
-async def handler(message: Message, command: CommandObject, state: FSMContext) -> None:
+async def handler(message: Message, command: CommandObject) -> None:
     group_id = int(decode_payload(command.args))
     user_id = int(message.from_user.id)
     name = message.from_user.first_name
@@ -71,7 +70,7 @@ async def channels(message: Message) -> None:
     groups = await get_users_groups(user_id=int(message.from_user.id))
     await message.answer(
         (
-            f"Channels available for you: {", ".join(groups)}"
+            f"Channels available for you: {", ".join(groups[0])}"
         )
     )
 
@@ -123,7 +122,7 @@ async def unhide_name(message: Message) -> None:
 
 
 @router.message(~F.text.startswith("/"), ~F.media_group_id)
-async def receive_post(message: Message, state: FSMContext) -> None:    
+async def receive_post(message: Message) -> None:    
     user_id = int(message.from_user.id)
     user_groups, user_groups_ids = await get_users_groups(user_id=user_id)
     keyboard = InlineKeyboardMarkup(
@@ -149,8 +148,12 @@ async def receive_post(message: Message, state: FSMContext) -> None:
 # пофиксить чтобы фотки были в правильном порядке, а не в рандомном
 @router.message(PostStates.waiting_for_post, ~F.text.startswith("/"), F.media_group_id)
 @media_group_handler # Copied and imported as lib from https://github.com/deptyped/aiogram-media-group It just works. 
-async def album_handler(messages: List[Message], state: FSMContext) -> None:
+async def album_handler(messages: List[Message]) -> None:
     user_groups, user_groups_ids = await get_users_groups(user_id=int(messages[0].from_user.id))
+    if len(user_groups) <= 0:
+        await messages[-1].answer(
+            "No channels to send. Join a channel via a link."
+        ) 
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}")]

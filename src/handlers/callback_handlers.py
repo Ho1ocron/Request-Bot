@@ -1,7 +1,6 @@
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from database.actions import create_group, get_user
-from aiogram.fsm.context import FSMContext
 from aiogram.types import InputMediaAnimation, InputMediaDocument, InputMediaPhoto, InputMediaVideo 
 from states import PostStates, GroupCallback, get_message_to_forward, set_message_to_forward, get_media_group_messages, save_media_group_messages
 
@@ -40,7 +39,7 @@ async def group_continue(callback: CallbackQuery) -> None:
 
 
 @router.callback_query(F.data == "cancel", PostStates.waiting_for_post,)
-async def Cancel_sending(callback: CallbackQuery, state: FSMContext) -> None: 
+async def Cancel_sending(callback: CallbackQuery) -> None: 
     await callback.message.answer(
         (
             "Sending cancelled."
@@ -56,7 +55,7 @@ async def forwarding(callback: CallbackQuery, callback_data: GroupCallback):
 
 
 @router.callback_query(F.data.startswith("select_group:"))
-async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
+async def select_group(callback: CallbackQuery) -> None:
     group_id = callback.data.split(":")[1]
     # Here you would typically handle the selection of the group, e.g., store it in the database or state
     # For now, we just acknowledge the selection
