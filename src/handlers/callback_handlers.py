@@ -1,7 +1,7 @@
 from aiogram import F, Router
-from aiogram.types import CallbackQuery
 from database import create_group, get_user
 from aiogram.types import(
+    CallbackQuery,
     InputMediaDocument, 
     InputMediaPhoto, 
     InputMediaVideo 
