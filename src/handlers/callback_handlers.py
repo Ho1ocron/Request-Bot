@@ -1,8 +1,19 @@
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from database.actions import create_group, get_user
-from aiogram.types import InputMediaAnimation, InputMediaDocument, InputMediaPhoto, InputMediaVideo 
-from states import PostStates, GroupCallback, get_message_to_forward, set_message_to_forward, get_media_group_messages, save_media_group_messages
+from aiogram.types import(
+    InputMediaDocument, 
+    InputMediaPhoto, 
+    InputMediaVideo 
+) 
+from states import (
+    PostStates, 
+    GroupCallback, 
+    get_message_to_forward, 
+    set_message_to_forward, 
+    get_media_group_messages, 
+    save_media_group_messages
+)
 
 
 router = Router(name=__name__)
