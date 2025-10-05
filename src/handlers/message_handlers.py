@@ -138,10 +138,9 @@ async def receive_post(message: Message, state: FSMContext) -> None:
     await redis_set_message_to_forward(
         redis_client=redis_client,
         key=f"message:{message.from_user.id}",
-        message=message
+        message=message,
+        expire_seconds=10
     )
-    print(f"message:{message.from_user.id}")
-
     
     await message.answer(
         "Please, select a channel:",

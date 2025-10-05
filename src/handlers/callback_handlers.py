@@ -81,7 +81,6 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
         redis_client=redis_client,
         key=f"message:{callback.from_user.id}"
     )
-    print(message, f"message:{callback.from_user.id}")
     media_group = get_media_group_messages()
     if media_group is not None:
         media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id
