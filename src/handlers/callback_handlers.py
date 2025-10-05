@@ -1,14 +1,18 @@
-from aiogram import F, Router
+from aiogram import F, Router, Dispatcher
 from database import create_group, get_user
+from utils import get_message_to_forward as redis_get_message_to_forward, redis_client
+from aiogram.fsm.context import FSMContext
 from aiogram.types import(
     CallbackQuery,
     InputMediaDocument, 
     InputMediaPhoto, 
-    InputMediaVideo 
+    InputMediaVideo ,
+    Message
 ) 
 from states import (
     PostStates, 
     GroupCallback, 
+    ForwardMessageState,
     get_message_to_forward, 
     set_message_to_forward, 
     get_media_group_messages, 
@@ -66,15 +70,18 @@ async def forwarding(callback: CallbackQuery, callback_data: GroupCallback):
 
 
 @router.callback_query(F.data.startswith("select_group:"))
-async def select_group(callback: CallbackQuery) -> None:
+async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     group_id = callback.data.split(":")[1]
     # Here you would typically handle the selection of the group, e.g., store it in the database or state
     # For now, we just acknowledge the selection
     # await callback.answer(f"Selected group ID: {group_id}")
     # Retrieve the message_id to forward from FSM state
     # message_id = data.get("message_id_to_forward")
-
-    message = get_message_to_forward()[0]
+    message = await redis_get_message_to_forward(
+        redis_client=redis_client,
+        key=f"message:{callback.from_user.id}"
+    )
+    print(message, f"message:{callback.from_user.id}")
     media_group = get_media_group_messages()
     if media_group is not None:
         media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id

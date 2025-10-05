@@ -1,14 +1,16 @@
 from aiogram import F, Router
 from aiogram.filters import Command, CommandStart, CommandObject
 from aiogram.types import Message
+from aiogram.fsm.context import FSMContext
 from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram_media_group import media_group_handler
 from typing import List
-from states import save_media_group_messages, set_hide_name, set_message_to_forward, PostStates
+from states import save_media_group_messages, set_hide_name, set_message_to_forward, PostStates, ForwardMessageState
 from database import create_user, get_users_groups, get_user, get_group
 from keyboards import main_keyboard, user_help_keyboard
+from utils import redis_client, set_message_to_forward as redis_set_message_to_forward
 import logging
 
 
@@ -122,7 +124,7 @@ async def unhide_name(message: Message) -> None:
 
 
 @router.message(~F.text.startswith("/"), ~F.media_group_id)
-async def receive_post(message: Message) -> None:    
+async def receive_post(message: Message, state: FSMContext) -> None:    
     user_id = int(message.from_user.id)
     user_groups, user_groups_ids = await get_users_groups(user_id=user_id)
     keyboard = InlineKeyboardMarkup(
@@ -133,17 +135,18 @@ async def receive_post(message: Message) -> None:
             [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel")]
         ]
     )
-    set_message_to_forward(message=message)
+    await redis_set_message_to_forward(
+        redis_client=redis_client,
+        key=f"message:{message.from_user.id}",
+        message=message
+    )
+    print(f"message:{message.from_user.id}")
+
+    
     await message.answer(
-        "Please select a channel:",
+        "Please, select a channel:",
         reply_markup=keyboard
     )
-    
-    # await message.answer(
-    #     (
-    #         "✅ Choose a channel where you want to send your post:"
-    #     )
-    # )
     
 # пофиксить чтобы фотки были в правильном порядке, а не в рандомном
 @router.message(PostStates.waiting_for_post, ~F.text.startswith("/"), F.media_group_id)

@@ -4,6 +4,10 @@ from aiogram.types import Message
 from typing import List
 
 
+class ForwardMessageState(StatesGroup):
+    saved = State()
+
+    
 class PostStates(StatesGroup):
     waiting_for_post = State()
 

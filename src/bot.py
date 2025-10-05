@@ -4,9 +4,10 @@ from aiogram.enums import ParseMode
 from asyncio import run
 from settings import TOKEN, ADMIN_IDS
 from database import init_db
-from aiogram.fsm.storage.redis import RedisStorage
-import redis.asyncio as redis
+# from aiogram.fsm.storage.redis import RedisStorage
+# import redis.asyncio as redis
 import handlers, logging, sys
+from utils import storage
 
 
 # Comment
@@ -16,8 +17,8 @@ async def main() -> None:
         TOKEN,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
-    redis_client = redis.Redis(host="localhost", port=6379, db=0)
-    storage = RedisStorage(redis_client)
+    # redis_client = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
+    # storage = RedisStorage(redis_client)
     dp = Dispatcher(storage=storage)
     
     dp.include_routers(
