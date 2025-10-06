@@ -1,6 +1,6 @@
 from aiogram import F, Router, Dispatcher
 from database import create_group, get_user
-from utils import get_message_to_forward as redis_get_message_to_forward, redis_client
+from utils import get_message_to_forward as redis_get_message_to_forward, delete_saved_message
 from aiogram.fsm.context import FSMContext
 from aiogram.types import(
     CallbackQuery,
@@ -62,6 +62,7 @@ async def Cancel_sending(callback: CallbackQuery) -> None:
     )
     set_message_to_forward(None)  # Clear the message to forward
     save_media_group_messages(None) # Clear the media group messages
+    delete_saved_message(key=f"message:{callback.from_user.id}")
 
 
 @router.callback_query(GroupCallback.filter())
@@ -77,10 +78,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     # await callback.answer(f"Selected group ID: {group_id}")
     # Retrieve the message_id to forward from FSM state
     # message_id = data.get("message_id_to_forward")
-    message = await redis_get_message_to_forward(
-        redis_client=redis_client,
-        key=f"message:{callback.from_user.id}"
-    )
+    message = await redis_get_message_to_forward(key=f"message:{callback.from_user.id}")
 
     media_group = get_media_group_messages()
 

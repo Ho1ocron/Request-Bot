@@ -10,7 +10,6 @@ storage = RedisStorage(redis_client)
 
 
 async def set_message_to_forward(
-    redis_client: redis.Redis, 
     message: Message, 
     key: str, 
     expire_seconds: int = 300
@@ -20,7 +19,7 @@ async def set_message_to_forward(
     await redis_client.set(key, message_json, ex=expire_seconds)
 
 
-async def get_message_to_forward(redis_client: redis.Redis, key: str) ->  Message | None:
+async def get_message_to_forward(key: str) ->  Message | None:
     message_json = await redis_client.get(key)
     if message_json:
         message_dict = json.loads(message_json)
@@ -29,9 +28,12 @@ async def get_message_to_forward(redis_client: redis.Redis, key: str) ->  Messag
 
 
 async def set_media_group_to_forward(
-    redis_client: redis.Redis, 
     messages: List[Message], 
     key: str, 
     expire_seconds: int = 300
 ) -> None:
     ...
+
+
+async def delete_saved_message(key: str) -> None:
+    await redis_client.delete(key)

@@ -10,7 +10,7 @@ from typing import List
 from states import save_media_group_messages, set_hide_name, set_message_to_forward, PostStates, ForwardMessageState
 from database import create_user, get_users_groups, get_user, get_group
 from keyboards import main_keyboard, user_help_keyboard
-from utils import redis_client, set_message_to_forward as redis_set_message_to_forward
+from utils import set_message_to_forward as redis_set_message_to_forward
 import logging
 
 
@@ -136,7 +136,6 @@ async def receive_post(message: Message, state: FSMContext) -> None:
         ]
     )
     await redis_set_message_to_forward(
-        redis_client=redis_client,
         key=f"message:{message.from_user.id}",
         message=message,
         expire_seconds=10
@@ -146,6 +145,7 @@ async def receive_post(message: Message, state: FSMContext) -> None:
         "Please, select a channel:",
         reply_markup=keyboard
     )
+    
     
 # пофиксить чтобы фотки были в правильном порядке, а не в рандомном
 @router.message(PostStates.waiting_for_post, ~F.text.startswith("/"), F.media_group_id)
