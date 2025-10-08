@@ -156,7 +156,7 @@ async def receive_post(message: Message, state: FSMContext) -> None:
 async def album_handler(messages: List[Message]) -> None:
     user_groups, user_groups_ids = await get_users_groups(user_id=int(messages[0].from_user.id))
     if len(user_groups) <= 0:
-        await messages[-1].answer(
+        await messages[-1].answer( # Answers to the last message in the media group since each photo in a media group is a single message 
             "No channels to send. Join a channel via a link."
         ) 
     keyboard = InlineKeyboardMarkup(
@@ -167,7 +167,7 @@ async def album_handler(messages: List[Message]) -> None:
             [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel")]
         ]
     )
-    await messages[-1].answer(
+    await messages[-1].answer( # Answers to the last message in the media group since each photo in a media group is a single message 
         "Please select a channel:",
         reply_markup=keyboard
     )
