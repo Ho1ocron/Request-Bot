@@ -81,7 +81,6 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     message = await redis_get_message_to_forward(key=f"message:{callback.from_user.id}")
 
     media_group = get_media_group_messages()
-
     if media_group is not None:
         media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id
 
@@ -135,7 +134,8 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     user = await get_user(user_id=user_id)
     extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.name}</a>'
     max_len_caption = max(media_group, key=lambda x: len(x.caption) if x.caption else 0).caption
-
+    idx: int
+    msg: Message
     for idx, msg in enumerate(media_group):
         caption = msg.caption if msg.caption is not None else None # Only the first message in the media group should have a caption and I should fix it so there is always captions
         if caption == max_len_caption and caption != None:
