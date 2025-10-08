@@ -1,5 +1,6 @@
 from tortoise import Tortoise
 from tortoise.expressions import Q
+
 from database.models import User, Group, GroupNotFoundError
 from settings import (
     TORTOISE_MODELS,

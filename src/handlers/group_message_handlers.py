@@ -4,9 +4,11 @@ from aiogram.enums.content_type import ContentType
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.utils.deep_linking import create_start_link
-from database import create_group
 from aiogram.types import ChatMemberUpdated
 from aiogram.enums.chat_member_status import ChatMemberStatus
+
+from database import create_group
+
 
 
 router = Router(name=__name__)

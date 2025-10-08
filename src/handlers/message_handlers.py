@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import F, Router
 from aiogram.filters import Command, CommandStart, CommandObject
 from aiogram.types import Message
@@ -6,12 +8,13 @@ from aiogram.utils.deep_linking import decode_payload
 from aiogram.enums.chat_type import ChatType
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram_media_group import media_group_handler
+
 from typing import List
+
 from states import save_media_group_messages, set_hide_name, set_message_to_forward, PostStates, ForwardMessageState
 from database import create_user, get_users_groups, get_user, get_group
 from keyboards import main_keyboard, user_help_keyboard
 from utils import set_message_to_forward as redis_set_message_to_forward
-import logging
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
