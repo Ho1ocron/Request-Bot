@@ -151,25 +151,26 @@ async def receive_post(message: Message, state: FSMContext) -> None:
     
     
 # пофиксить чтобы фотки были в правильном порядке, а не в рандомном
-@router.message(PostStates.waiting_for_post, ~F.text.startswith("/"), F.media_group_id)
+@router.message(~F.text.startswith("/"), F.media_group_id)
 @media_group_handler # Copied and imported as lib from https://github.com/deptyped/aiogram-media-group It just works. 
 async def album_handler(messages: List[Message]) -> None:
-    user_groups, user_groups_ids = await get_users_groups(user_id=int(messages[0].from_user.id))
-    if len(user_groups) <= 0:
-        await messages[-1].answer( # Answers to the last message in the media group since each photo in a media group is a single message 
-            "No channels to send. Join a channel via a link."
-        ) 
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}")]
-            for group, group_id in zip(user_groups, user_groups_ids)
-        ] + [
-            [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel")]
-        ]
-    )
-    await messages[-1].answer( # Answers to the last message in the media group since each photo in a media group is a single message 
-        "Please select a channel:",
-        reply_markup=keyboard
-    )
+    # user_groups, user_groups_ids = await get_users_groups(user_id=int(messages[0].from_user.id))
+    print(messages[0])
+    # if len(user_groups) <= 0:
+    #     await messages[-1].answer( # Answers to the last message in the media group since each photo in a media group is a single message 
+    #         "No channels to send. Join a channel via a link."
+    #     ) 
+    # keyboard = InlineKeyboardMarkup(
+    #     inline_keyboard=[
+    #         [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}")]
+    #         for group, group_id in zip(user_groups, user_groups_ids)
+    #     ] + [
+    #         [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel")]
+    #     ]
+    # )
+    # await messages[-1].answer( # Answers to the last message in the media group since each photo in a media group is a single message 
+    #     "Please select a channel:",
+    #     reply_markup=keyboard
+    # )
     
-    save_media_group_messages(_media_group=messages)
+    # save_media_group_messages(_media_group=messages)
