@@ -14,7 +14,10 @@ from typing import List
 from states import save_media_group_messages, set_hide_name, set_message_to_forward, PostStates, ForwardMessageState
 from database import create_user, get_users_groups, get_user, get_group
 from keyboards import main_keyboard, user_help_keyboard
-from utils import set_message_to_forward as redis_set_message_to_forward
+from utils import (
+    set_message_to_forward as redis_set_message_to_forward, 
+    set_media_group_to_forward as redis_set_media_group_to_forward,
+)
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -172,4 +175,4 @@ async def album_handler(messages: List[Message]) -> None:
         reply_markup=keyboard
     )
     
-    save_media_group_messages(_media_group=messages)
+    await redis_set_media_group_to_forward(key=f"message:{messages[-1].from_user.id}", messages=messages)
