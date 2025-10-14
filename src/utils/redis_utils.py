@@ -32,8 +32,19 @@ async def set_media_group_to_forward(
     key: str, 
     expire_seconds: int = 300
 ) -> None:
-    ...
+    serialized = [message.model_dump_json() for message in messages]
+    await redis_client.rpush(key, *serialized)
+    await redis_client.expire(key, expire_seconds)
 
 
-async def delete_saved_message(key: str) -> None:
+async def get_media_group_to_forward(key: str) -> List[Message] | None:
+    messages_json = await redis_client.lrange(key, 0, -1)
+    if not messages_json:
+        return None
+    messages = [Message.model_validate_json(m) for m in messages_json]
+    return messages
+
+
+async def delete_saved_message(key: str) -> str:
     await redis_client.delete(key)
+    return "Your message order is cleared."
