@@ -84,7 +84,9 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     # await callback.answer(f"Selected group ID: {group_id}")
     # Retrieve the message_id to forward from FSM state
     # message_id = data.get("message_id_to_forward")
-    message = await redis_get_message_to_forward(key=f"message:{callback.from_user.id}")
+    try:
+        message = await redis_get_message_to_forward(key=f"message:{callback.from_user.id}")
+    except: pass
 
     media_group = await redis_get_media_group_to_forward(key=f"message:{callback.from_user.id}")
     if media_group is not None:
