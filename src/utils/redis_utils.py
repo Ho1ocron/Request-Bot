@@ -30,17 +30,21 @@ async def get_message_to_forward(key: str) ->  Message | None:
 
 
 async def set_media_group_to_forward(messages: List[Message], key: str, expire_seconds: int = 300) -> None:
-    serialized = [message.model_dump() for message in messages]
-    await redis_client.set(key, json.dumps(serialized), ex=expire_seconds)
+    # We first dump every single message into a dict type json. Then we dump this message dict (json) into json str
+    # Then we add it into a dict as a value, where the key is message's id. That way we get {int: str}
+    # Redis hsetex only takes a dict with types int or str
+    # Unlike just Redis.hset, hsetex can take expiration time that is crucial for the bot's logic
+    serialized = {message.message_id: json.dumps(message.model_dump()) for message in messages}  
+    await redis_client.hsetex(key=key, mapping=serialized, ex=expire_seconds)
 
 
 async def get_media_group_to_forward(key: str) -> List[Message] | None:
-    data = await redis_client.get(key)
+    data = await redis_client.hgetall(name=key)
     if not data:
         return None
     message_dicts = json.loads(data)
     # Convert each dict back into aiogram Message objects
-    return [Message.model_validate(d) for d in message_dicts]
+    return List(Message.model_validate(d) for d in message_dicts)
 
 
 async def delete_saved_message(key: str) -> None:
