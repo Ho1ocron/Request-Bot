@@ -30,7 +30,7 @@ async def get_message_to_forward(key: str) ->  Message | None:
 
 
 async def set_media_group_to_forward(messages: List[Message], key: str, expire_seconds: int = 300) -> None:
-    serialized = [message.model_dump_json() for message in messages]
+    serialized = [message.model_dump() for message in messages]
     await redis_client.set(key, json.dumps(serialized), ex=expire_seconds)
 
 
