@@ -8,6 +8,8 @@ from typing import List
 redis_client = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
 storage = RedisStorage(redis_client)
 
+# https://redis.io/docs/latest/develop/clients/redis-py/ Доки для редиса
+
 
 async def set_message_to_forward(
     message: Message, 
