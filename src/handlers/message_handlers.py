@@ -10,7 +10,6 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram_media_group import media_group_handler
 
 from database import create_user, get_users_groups, get_user, get_group
-from keyboards import main_keyboard, user_help_keyboard
 from utils import set_message_to_forward, set_media_group_to_forward
 
 
@@ -44,7 +43,9 @@ async def handler(message: Message, command: CommandObject) -> None:
 @router.message(Command(commands=["start"]))    
 async def start(message: Message) -> None:
     bot_name = await message.bot.get_me()
-    keyboard = main_keyboard(bot_name=bot_name.username)
+    keyboard = InlineKeyboardMarkup(
+        [[InlineKeyboardButton(text="📎 Add to your group", url=f"https://t.me/{bot_name}?startgroup=true")]]
+    )
 
     await message.answer(
         (
@@ -79,7 +80,18 @@ async def channels(message: Message) -> None:
 
 @router.message(Command(commands=["help"]))
 async def help(message: Message) -> None:
-    keyboard = user_help_keyboard()
+    keyboard = InlineKeyboardMarkup(
+                inline_keyboard = [
+            [
+                InlineKeyboardButton(text="📝 Command List", callback_data="send_command_list"),
+                InlineKeyboardButton(text="📌 FAQ", callback_data="send_faq"),
+            ],
+            [
+                InlineKeyboardButton(text="🔍 About Us", callback_data="send_about_us"),
+            ],
+        ]
+
+    )
 
     await message.answer(
         (

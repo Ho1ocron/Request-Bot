@@ -13,7 +13,6 @@ from utils import (
     get_message_to_forward, 
     get_media_group_to_forward,
     delete_saved_message,
-    GroupCallback
 )
 
 
@@ -31,24 +30,6 @@ async def send_random_value(callback: CallbackQuery) -> None:
     )
 
 
-@router.callback_query(F.data == "custom_link")
-async def create_link(callback: CallbackQuery) -> None:
-    await callback.message.answer(
-        (
-            "📝 Send me a sentence you want to use in your link"
-        )
-    )
-
-
-@router.callback_query(F.data == "group_continue")
-async def group_continue(callback: CallbackQuery) -> None:
-    await create_group()
-    await callback.message.answer(
-        (
-            "Alright, here we go!\n\n"
-        )
-    )
-
 
 @router.callback_query(F.data == "cancel")
 async def Cancel_sending(callback: CallbackQuery) -> None: 
@@ -59,10 +40,6 @@ async def Cancel_sending(callback: CallbackQuery) -> None:
     )
     await delete_saved_message(key=f"message:{callback.from_user.id}")
 
-
-@router.callback_query(GroupCallback.filter())
-async def forwarding(callback: CallbackQuery, callback_data: GroupCallback):
-    await callback.answer(f"{callback_data.group_name=}")
 
 
 @router.callback_query(F.data.startswith("select_group:"))

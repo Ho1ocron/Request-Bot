@@ -7,5 +7,3 @@ from utils.redis_utils import(
     storage,
     redis_client,
 )
-
-from utils.models import GroupCallback
