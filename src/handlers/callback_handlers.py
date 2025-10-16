@@ -57,7 +57,7 @@ async def Cancel_sending(callback: CallbackQuery) -> None:
             "Sending cancelled."
         )
     )
-    delete_saved_message(key=f"message:{callback.from_user.id}")
+    await delete_saved_message(key=f"message:{callback.from_user.id}")
 
 
 @router.callback_query(GroupCallback.filter())
@@ -74,8 +74,8 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     # await callback.answer(f"Selected group ID: {group_id}")
     # Retrieve the message_id to forward from FSM state
     # message_id = data.get("message_id_to_forward")
-    message: Message | None
-    media_group: list | None
+    message: Message | None = None
+    media_group: list | None = None
     if message_type == "media_group":
         media_group = await get_media_group_to_forward(key=f"message:{callback.from_user.id}")
     elif message_type == "message":
@@ -98,7 +98,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     except Exception as e: 
         print(f"message getting faild with error: {e}")
     # Forward the message to the selected group
-    if not media_group:
+    if "message":
         message_text = message.caption or message.text or ""
         message_text += extr_caption
         # Get the original message
