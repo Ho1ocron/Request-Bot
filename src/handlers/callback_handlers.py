@@ -104,8 +104,10 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     try:
         if not message and not media_group:
             await callback.message.answer("No message to send found.")
+            await redis_delete_saved_message(key=f"message:{callback.from_user.id}")
             return
-    except: return
+    except Exception as e: 
+        print(f"message getting faild with error: {e}")
     # Forward the message to the selected group
     if not media_group:
         message_text = message.caption or message.text or ""
@@ -141,6 +143,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
                 caption=message_text,
             )
         await callback.message.answer("Your post sent successfully.")
+        await redis_delete_saved_message(key=f"message:{callback.from_user.id}")
         return
     
     _media_group = []
@@ -177,10 +180,13 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
                 chat_id=group_id,
                 media=_media_group
             )
+
             await callback.message.answer("Your post sent successfully.")
+            await redis_delete_saved_message(key=f"message:{callback.from_user.id}")
     except Exception as e:
         await callback.message.answer(f"Error occurred while sending media group: {e}")
-    # finally:
+    finally:
+        await redis_delete_saved_message(key=f"message:{callback.from_user.id}")
         # set_message_to_forward(None)  # Clear the message to forward
         # save_media_group_messages(None)  # Clear the media group messages
 
