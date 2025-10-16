@@ -79,27 +79,33 @@ async def forwarding(callback: CallbackQuery, callback_data: GroupCallback):
 @router.callback_query(F.data.startswith("select_group:"))
 async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     group_id = callback.data.split(":")[1]
+    message_type = callback.data.split(":")[2]
     # Here you would typically handle the selection of the group, e.g., store it in the database or state
     # For now, we just acknowledge the selection
     # await callback.answer(f"Selected group ID: {group_id}")
     # Retrieve the message_id to forward from FSM state
     # message_id = data.get("message_id_to_forward")
-    try:
+    message: Message | None
+    media_group: list | None
+    if message_type == "media_group":
+        media_group = await redis_get_media_group_to_forward(key=f"message:{callback.from_user.id}")
+    elif message_type == "message":
         message = await redis_get_message_to_forward(key=f"message:{callback.from_user.id}")
-    except: pass
+    else:
+        message = None
+        media_group = None
 
-    media_group = await redis_get_media_group_to_forward(key=f"message:{callback.from_user.id}")
     if media_group is not None:
         media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id
 
     user_id = callback.message.chat.id
     user = await get_user(user_id=user_id)
     extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.name}</a>'
-
-    if not message and not media_group:
-        await callback.message.answer("No message to send found.")
-        return
-    
+    try:
+        if not message and not media_group:
+            await callback.message.answer("No message to send found.")
+            return
+    except: return
     # Forward the message to the selected group
     if not media_group:
         message_text = message.caption or message.text or ""

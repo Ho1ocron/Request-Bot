@@ -135,7 +135,7 @@ async def receive_post(message: Message, state: FSMContext) -> None:
     user_groups, user_groups_ids = await get_users_groups(user_id=user_id)
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}")]
+            [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}:message")]
             for group, group_id in zip(user_groups, user_groups_ids)
         ] + [
             [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel")]
@@ -164,7 +164,7 @@ async def album_handler(messages: List[Message]) -> None:
         ) 
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}")]
+            [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}:media_group")]
             for group, group_id in zip(user_groups, user_groups_ids)
         ] + [
             [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel")]

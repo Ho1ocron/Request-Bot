@@ -35,16 +35,21 @@ async def set_media_group_to_forward(messages: List[Message], key: str, expire_s
     # Redis hsetex only takes a dict with types int or str
     # Unlike just Redis.hset, hsetex can take expiration time that is crucial for the bot's logic
     serialized = {message.message_id: json.dumps(message.model_dump()) for message in messages}  
-    await redis_client.hsetex(key=key, mapping=serialized, ex=expire_seconds)
+    await redis_client.hsetex(name=key, mapping=serialized, ex=expire_seconds)
+    # print(f"set: {serialized}")
 
 
 async def get_media_group_to_forward(key: str) -> List[Message] | None:
     data = await redis_client.hgetall(name=key)
     if not data:
         return None
-    message_dicts = json.loads(data)
+    messages_dict = [json.loads(message) for message in data.values()]
     # Convert each dict back into aiogram Message objects
-    return List(Message.model_validate(d) for d in message_dicts)
+    try:
+        return list(Message.model_validate(d) for d in messages_dict)
+    except:
+        print(f"get: {messages_dict}")
+        return None
 
 
 async def delete_saved_message(key: str) -> None:
