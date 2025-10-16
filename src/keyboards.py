@@ -1,7 +1,7 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from states import GroupCallback
+from utils import GroupCallback
 from database.actions import get_group
 
 from asyncio import run

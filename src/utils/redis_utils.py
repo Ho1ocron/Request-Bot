@@ -1,8 +1,8 @@
 import json
 import redis.asyncio as redis
+
 from aiogram.types import Message
 from aiogram.fsm.storage.redis import RedisStorage
-from typing import List
 
 
 redis_client = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
@@ -29,17 +29,16 @@ async def get_message_to_forward(key: str) ->  Message | None:
     return None
 
 
-async def set_media_group_to_forward(messages: List[Message], key: str, expire_seconds: int = 300) -> None:
+async def set_media_group_to_forward(messages: list[Message], key: str, expire_seconds: int = 300) -> None:
     # We first dump every single message into a dict type json. Then we dump this message dict (json) into json str
     # Then we add it into a dict as a value, where the key is message's id. That way we get {int: str}
     # Redis hsetex only takes a dict with types int or str
     # Unlike just Redis.hset, hsetex can take expiration time that is crucial for the bot's logic
     serialized = {message.message_id: json.dumps(message.model_dump()) for message in messages}  
     await redis_client.hsetex(name=key, mapping=serialized, ex=expire_seconds)
-    # print(f"set: {serialized}")
 
 
-async def get_media_group_to_forward(key: str) -> List[Message] | None:
+async def get_media_group_to_forward(key: str) -> list[Message] | None:
     data = await redis_client.hgetall(name=key)
     if not data:
         return None

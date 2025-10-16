@@ -9,15 +9,9 @@ from aiogram.enums.chat_type import ChatType
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram_media_group import media_group_handler
 
-from typing import List
-
-from states import save_media_group_messages, set_hide_name, set_message_to_forward, PostStates, ForwardMessageState
 from database import create_user, get_users_groups, get_user, get_group
 from keyboards import main_keyboard, user_help_keyboard
-from utils import (
-    set_message_to_forward as redis_set_message_to_forward, 
-    set_media_group_to_forward as redis_set_media_group_to_forward,
-)
+from utils import set_message_to_forward, set_media_group_to_forward
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -111,24 +105,6 @@ async def test(message: Message) -> None:
     )
 
 
-@router.message(Command(commands=["hide_name"]))
-async def hide_name(message: Message) -> None:
-    set_hide_name(True)
-    await message.answer(
-        (
-            "✅ From now on, your name will be hidden when you send posts to the channel."
-        )
-    )
-@router.message(Command(commands=["unhide_name"]))
-async def unhide_name(message: Message) -> None:
-    set_hide_name(False)
-    await message.answer(
-        (
-            "✅ From now on, your name will be visible when you send posts to the channel."
-        )
-    )
-
-
 @router.message(~F.text.startswith("/"), ~F.media_group_id)
 async def receive_post(message: Message, state: FSMContext) -> None:    
     user_id = int(message.from_user.id)
@@ -141,7 +117,7 @@ async def receive_post(message: Message, state: FSMContext) -> None:
             [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel")]
         ]
     )
-    await redis_set_message_to_forward(
+    await set_message_to_forward(
         key=f"message:{message.from_user.id}",
         message=message,
         expire_seconds=10
@@ -156,7 +132,7 @@ async def receive_post(message: Message, state: FSMContext) -> None:
 # пофиксить чтобы фотки были в правильном порядке, а не в рандомном
 @router.message(~F.text.startswith("/"), F.media_group_id)
 @media_group_handler # Copied and imported as a lib from https://github.com/deptyped/aiogram-media-group It just works. 
-async def album_handler(messages: List[Message]) -> None:
+async def album_handler(messages: list[Message]) -> None:
     user_groups, user_groups_ids = await get_users_groups(user_id=int(messages[0].from_user.id))
     if len(user_groups) <= 0:
         await messages[-1].answer( # Answers to the last message in the media group since each photo in a media group is a single message 
@@ -170,9 +146,10 @@ async def album_handler(messages: List[Message]) -> None:
             [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel")]
         ]
     )
-    await messages[-1].answer( # Answers to the last message in the media group since each photo in a media group is a single message. That should handle it correctly
+    await messages[-1].answer( 
+        # Answers to the last message in the media group since each photo in a media group is a single message. That should handle it correctly
         "Please select a channel:",
         reply_markup=keyboard
     )
     
-    await redis_set_media_group_to_forward(key=f"message:{messages[-1].from_user.id}", messages=messages)
+    await set_media_group_to_forward(key=f"message:{messages[-1].from_user.id}", messages=messages)

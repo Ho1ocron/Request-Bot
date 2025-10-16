@@ -10,19 +10,10 @@ from aiogram.types import(
 
 from database import create_group, get_user
 from utils import (
-    get_message_to_forward as redis_get_message_to_forward, 
-    get_media_group_to_forward as redis_get_media_group_to_forward,
-    delete_saved_message as redis_delete_saved_message
-)
-
-from states import (
-    PostStates, 
-    GroupCallback, 
-    ForwardMessageState,
     get_message_to_forward, 
-    set_message_to_forward, 
-    get_media_group_messages, 
-    save_media_group_messages
+    get_media_group_to_forward,
+    delete_saved_message,
+    GroupCallback
 )
 
 
@@ -59,16 +50,14 @@ async def group_continue(callback: CallbackQuery) -> None:
     )
 
 
-@router.callback_query(F.data == "cancel", PostStates.waiting_for_post,)
+@router.callback_query(F.data == "cancel")
 async def Cancel_sending(callback: CallbackQuery) -> None: 
     await callback.message.answer(
         (
             "Sending cancelled."
         )
     )
-    set_message_to_forward(None)  # Clear the message to forward
-    save_media_group_messages(None) # Clear the media group messages
-    redis_delete_saved_message(key=f"message:{callback.from_user.id}")
+    delete_saved_message(key=f"message:{callback.from_user.id}")
 
 
 @router.callback_query(GroupCallback.filter())
@@ -88,9 +77,9 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     message: Message | None
     media_group: list | None
     if message_type == "media_group":
-        media_group = await redis_get_media_group_to_forward(key=f"message:{callback.from_user.id}")
+        media_group = await get_media_group_to_forward(key=f"message:{callback.from_user.id}")
     elif message_type == "message":
-        message = await redis_get_message_to_forward(key=f"message:{callback.from_user.id}")
+        message = await get_message_to_forward(key=f"message:{callback.from_user.id}")
     else:
         message = None
         media_group = None
@@ -104,7 +93,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     try:
         if not message and not media_group:
             await callback.message.answer("No message to send found.")
-            await redis_delete_saved_message(key=f"message:{callback.from_user.id}")
+            await delete_saved_message(key=f"message:{callback.from_user.id}")
             return
     except Exception as e: 
         print(f"message getting faild with error: {e}")
@@ -143,7 +132,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
                 caption=message_text,
             )
         await callback.message.answer("Your post sent successfully.")
-        await redis_delete_saved_message(key=f"message:{callback.from_user.id}")
+        await delete_saved_message(key=f"message:{callback.from_user.id}")
         return
     
     _media_group = []
@@ -161,7 +150,6 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
             if idx == 0:
                 caption = extr_caption
         if msg.photo: # Пофиксить чтобы фотки были в правильном порядке, а не в рандомном через insert() если есть подпись.
-            # Эта часть кода должна быть исправлена, чтобы использовать правильный порядок фотографий через .sort() по id
             file_id = msg.photo[-1].file_id
             _media_group.append(InputMediaPhoto(media=file_id, caption=caption))
         elif msg.video:
@@ -175,19 +163,16 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
         #     _media_group.append(InputMediaAnimation(media=file_id, caption=caption))
     try:
         if _media_group:
-            # _media_group[0].caption = _media_group[0].caption + extr_caption if _media_group[0].caption else extr_caption
             await callback.bot.send_media_group(
                 chat_id=group_id,
                 media=_media_group
             )
 
             await callback.message.answer("Your post sent successfully.")
-            await redis_delete_saved_message(key=f"message:{callback.from_user.id}")
+            await delete_saved_message(key=f"message:{callback.from_user.id}")
     except Exception as e:
         await callback.message.answer(f"Error occurred while sending media group: {e}")
     finally:
-        await redis_delete_saved_message(key=f"message:{callback.from_user.id}")
-        # set_message_to_forward(None)  # Clear the message to forward
-        # save_media_group_messages(None)  # Clear the media group messages
+        await delete_saved_message(key=f"message:{callback.from_user.id}")
 
 # id to add: Add source from which the message was sent, so that it can be used in the caption.
