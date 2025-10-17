@@ -32,3 +32,12 @@ DB_NAME = getenv('DB_NAME')
 DEBUG = literal_eval(getenv('DEBUG'))
 
 TORTOISE_MODELS = ['database.models']
+
+# * Redis Database Config
+
+REDIS_DB_HOST = getenv('REDIS_DB_HOST')
+REDIS_DB_USER = getenv('REDIS_DB_USER')
+REDIS_DB_PASS = getenv('REDIS_DB_PASS')
+REDIS_DB_NAME = getenv('REDIS_DB_NAME')
+REDIS_DB_PORT = getenv('REDIS_DB_PORT')
+REDIS_DEBUG = literal_eval(getenv('REDIS_DEBUG'))
