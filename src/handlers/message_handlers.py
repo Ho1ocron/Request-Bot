@@ -10,7 +10,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram_media_group import media_group_handler
 
 from database import create_user, get_users_groups, get_user, get_group
-from utils import set_message_to_forward, set_media_group_to_forward
+from utils import set_message_to_forward, set_media_group_to_forward, delete_saved_message
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -118,7 +118,8 @@ async def test(message: Message) -> None:
 
 
 @router.message(~F.text.startswith("/"), ~F.media_group_id)
-async def receive_post(message: Message, state: FSMContext) -> None:    
+async def receive_post(message: Message, state: FSMContext) -> None:   
+    await delete_saved_message(f"message:{message.from_user.id}") 
     user_id = int(message.from_user.id)
     user_groups, user_groups_ids = await get_users_groups(user_id=user_id)
     keyboard = InlineKeyboardMarkup(
@@ -145,6 +146,7 @@ async def receive_post(message: Message, state: FSMContext) -> None:
 @router.message(~F.text.startswith("/"), F.media_group_id)
 @media_group_handler # Copied and imported as a lib from https://github.com/deptyped/aiogram-media-group It just works. 
 async def album_handler(messages: list[Message]) -> None:
+    await delete_saved_message(f"message:{messages[-1].from_user.id}")
     user_groups, user_groups_ids = await get_users_groups(user_id=int(messages[0].from_user.id))
     if len(user_groups) <= 0:
         await messages[-1].answer( # Answers to the last message in the media group since each photo in a media group is a single message 

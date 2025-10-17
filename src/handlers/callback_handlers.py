@@ -5,10 +5,11 @@ from aiogram.types import(
     InputMediaDocument, 
     InputMediaPhoto, 
     InputMediaVideo ,
-    Message
+    Message,
+    InlineKeyboardMarkup
 ) 
 
-from database import create_group, get_user
+from database import get_user, get_group
 from utils import (
     get_message_to_forward, 
     get_media_group_to_forward,
@@ -46,36 +47,43 @@ async def Cancel_sending(callback: CallbackQuery) -> None:
 async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
     group_id = callback.data.split(":")[1]
     message_type = callback.data.split(":")[2]
-    # Here you would typically handle the selection of the group, e.g., store it in the database or state
-    # For now, we just acknowledge the selection
-    # await callback.answer(f"Selected group ID: {group_id}")
-    # Retrieve the message_id to forward from FSM state
-    # message_id = data.get("message_id_to_forward")
+
     message: Message | None = None
     media_group: list | None = None
+
+    group = await get_group(group_id)
+    
     if message_type == "media_group":
         media_group = await get_media_group_to_forward(key=f"message:{callback.from_user.id}")
+        media_group.sort(key=lambda x: x.message_id)
     elif message_type == "message":
         message = await get_message_to_forward(key=f"message:{callback.from_user.id}")
-    else:
-        message = None
-        media_group = None
-
-    if media_group is not None:
-        media_group.sort(key=lambda x: x.message_id)  # Sort media group by message_id
 
     user_id = callback.message.chat.id
     user = await get_user(user_id=user_id)
     extr_caption = f'\n\n<a href="tg://user?id={user_id}">{user.name}</a>'
-    try:
-        if not message and not media_group:
-            await callback.message.answer("No message to send found.")
-            await delete_saved_message(key=f"message:{callback.from_user.id}")
-            return
-    except Exception as e: 
-        print(f"message getting faild with error: {e}")
+
+    if not message and not media_group:
+        await callback.message.answer("No message to send found.")
+        await delete_saved_message(key=f"message:{callback.from_user.id}")
+        return
+    
+    # No we need to remove the button that user pressed so they won't send their post multiple times to one channel
+    message_markup = callback.message.reply_markup
+    new_keyboard = []
+
+    # In this loop we find the button that user pressed and build remove it in the new keyboard
+    new_keyboard = []
+    for row in message_markup.inline_keyboard:
+        new_row = [b for b in row if b.callback_data != callback.data]
+        if new_row:  # Avoid empty rows
+            new_keyboard.append(new_row)
+    
+    # Creating a new markup to replace the existing one
+    new_markup = InlineKeyboardMarkup(inline_keyboard=new_keyboard)
+
     # Forward the message to the selected group
-    if "message":
+    if message_type == "message":
         message_text = message.caption or message.text or ""
         message_text += extr_caption
         # Get the original message
@@ -108,8 +116,8 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
                 animation=message.animation.file_id,
                 caption=message_text,
             )
-        await callback.message.answer("Your post sent successfully.")
-        await delete_saved_message(key=f"message:{callback.from_user.id}")
+        await callback.message.edit_reply_markup(reply_markup=new_markup)
+        await callback.message.answer(f"Your post sent successfully to <b>{group.name}</b>!")
         return
     
     _media_group = []
@@ -144,12 +152,9 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
                 chat_id=group_id,
                 media=_media_group
             )
-
-            await callback.message.answer("Your post sent successfully.")
-            await delete_saved_message(key=f"message:{callback.from_user.id}")
+            await callback.message.edit_reply_markup(reply_markup=new_markup)
+            await callback.message.answer(f"Your post sent successfully to <b>{group.name}</b>!")
     except Exception as e:
         await callback.message.answer(f"Error occurred while sending media group: {e}")
-    finally:
-        await delete_saved_message(key=f"message:{callback.from_user.id}")
 
 # id to add: Add source from which the message was sent, so that it can be used in the caption.
