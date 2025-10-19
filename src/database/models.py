@@ -3,11 +3,11 @@ from tortoise.fields import (
     IntField, 
     CharField, 
     ManyToManyRelation,
-    ManyToManyField, 
     BigIntField,
     BooleanField,
+    DatetimeField,
+    ManyToManyField, 
     ForeignKeyField,
-    DatetimeField
 )
 
 
