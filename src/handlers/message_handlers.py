@@ -44,7 +44,7 @@ async def handler(message: Message, command: CommandObject) -> None:
 async def start(message: Message) -> None:
     bot_name = await message.bot.get_me()
     keyboard = InlineKeyboardMarkup(
-        [[InlineKeyboardButton(text="📎 Add to your group", url=f"https://t.me/{bot_name}?startgroup=true")]]
+        inline_keyboard=[[InlineKeyboardButton(text="📎 Add to your group", url=f"https://t.me/{bot_name}?startgroup=true")]]
     )
 
     await message.answer(
@@ -64,7 +64,7 @@ async def start(message: Message) -> None:
             "❔To get more information and commands, use /help.\n\n"
             
         ),
-        reply_markup=keyboard.as_markup()
+        reply_markup=keyboard
     )
 
     

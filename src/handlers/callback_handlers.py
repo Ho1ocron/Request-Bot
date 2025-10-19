@@ -116,7 +116,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
                 animation=message.animation.file_id,
                 caption=message_text,
             )
-        await callback.message.edit_reply_markup(reply_markup=new_markup)
+        # await callback.message.edit_reply_markup(reply_markup=new_markup)
         await callback.message.answer(f"Your post sent successfully to <b>{group.name}</b>!")
         return
     
@@ -152,7 +152,7 @@ async def select_group(callback: CallbackQuery, state: FSMContext) -> None:
                 chat_id=group_id,
                 media=_media_group
             )
-            await callback.message.edit_reply_markup(reply_markup=new_markup)
+            # await callback.message.edit_reply_markup(reply_markup=new_markup)
             await callback.message.answer(f"Your post sent successfully to <b>{group.name}</b>!")
     except Exception as e:
         await callback.message.answer(f"Error occurred while sending media group: {e}")
