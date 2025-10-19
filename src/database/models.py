@@ -48,8 +48,8 @@ class GroupMembership(Model):
     Stores ban info and timestamps per group.
     """
     id = IntField(pk=True)
-    user = ForeignKeyField("models.User", related_name="group_memberships")
-    group = ForeignKeyField("models.Group", related_name="group_memberships")
+    user = ForeignKeyField("User", related_name="group_memberships")
+    group = ForeignKeyField("Group", related_name="group_memberships")
 
     is_banned = BooleanField(default=False)
     banned_reason = CharField(max_length=255, null=True)
