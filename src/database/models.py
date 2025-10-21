@@ -16,7 +16,7 @@ class User(Model):
     user_id = BigIntField(unique=True)
     name = CharField(max_length=50, unique=True)
     is_global_banned = BooleanField(default=False)
-
+    
     groups: ManyToManyRelation["Group"] = ManyToManyField(
         "models.Group", related_name="users", through="group_membership"
     )
