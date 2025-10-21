@@ -29,7 +29,7 @@ class User(Model):
 
 
 class Group(Model):
-    id = IntField(pk=True)
+    _id = IntField(pk=True)
     group_id = BigIntField(unique=True)
     name = CharField(max_length=100)
 
@@ -39,7 +39,7 @@ class Group(Model):
         table = "groups" 
 
     def __str__(self):
-        return f"Group(id={self.id}, name={self.name})"
+        return f"Group(id={self._id}, name={self.name})"
 
 
 class GroupMembership(Model):
