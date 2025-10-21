@@ -39,7 +39,6 @@ async def handler(message: Message, command: CommandObject) -> None:
     )
 
 
-
 @router.message(Command(commands=["start"]))    
 async def start(message: Message) -> None:
     bot_name = await message.bot.get_me()
