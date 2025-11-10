@@ -6,11 +6,7 @@ from datetime import datetime, timezone
 from database.models import User, Group, GroupMembership, GroupNotFoundError
 from settings import (
     TORTOISE_MODELS,
-    DB_HOST,
-    DB_NAME,
-    DB_PASS,
-    DB_PORT,
-    DB_USER,
+    DB_URL,
     DEBUG,
 )
 
@@ -21,7 +17,7 @@ class DatabaseActions:
         db_url = (
             "sqlite://db.sqlite3"
             if DEBUG
-            else f"postgres://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+            else DB_URL
         )
         await Tortoise.init(
             db_url=db_url,
