@@ -117,10 +117,14 @@ async def test(message: Message) -> None:
 
 
 @router.message(~F.text.startswith("/"), ~F.media_group_id)
-async def receive_post(message: Message, state: FSMContext) -> None:   
+async def receive_post(message: Message) -> None:   
     await delete_saved_message(f"message:{message.from_user.id}") 
     user_id = int(message.from_user.id)
-    user_groups, user_groups_ids = await get_users_groups(user_id=user_id)
+    try:
+        user_groups, user_groups_ids = await get_users_groups(user_id=user_id)
+    except Exception as e:
+        print(e)
+        return
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}:message")]
