@@ -120,11 +120,8 @@ async def test(message: Message) -> None:
 async def receive_post(message: Message) -> None:   
     await delete_saved_message(f"message:{message.from_user.id}") 
     user_id = int(message.from_user.id)
-    try:
-        user_groups, user_groups_ids = await get_users_groups(user_id=user_id)
-    except Exception as e:
-        print(e)
-        return
+    
+    user_groups, user_groups_ids = await get_users_groups(user_id=user_id)
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}:message")]

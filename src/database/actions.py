@@ -44,7 +44,11 @@ async def get_users_groups(user_id: int) -> tuple[list[str], list[int]]:
     user = await User.get_or_none(user_id=user_id)
     if not user:
         return ([], [])
-    await user.fetch_related("groups")  # load the ManyToMany relation
+    try:
+        await user.fetch_related("group_membership")  # load the ManyToMany relation
+    except Exception as e:
+        print(e)
+        return ([], [])
     return ([group.name for group in user.groups], [group.group_id for group in user.groups])
 
 
