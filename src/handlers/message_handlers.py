@@ -122,6 +122,7 @@ async def receive_post(message: Message) -> None:
     user_id = int(message.from_user.id)
     
     user_groups, user_groups_ids = await get_users_groups(user_id=user_id)
+    print(user_groups)
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}:message")]
@@ -152,6 +153,9 @@ async def album_handler(messages: list[Message]) -> None:
         await messages[-1].answer( # Answers to the last message in the media group since each photo in a media group is a single message 
             "No channels to send. Join a channel via a link."
         ) 
+        return
+    
+    print(user_groups)
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=group, callback_data=f"select_group:{group_id}:media_group")]

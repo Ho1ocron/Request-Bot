@@ -18,7 +18,8 @@ class User(Model):
     is_global_banned = BooleanField(default=False)
     
     groups: ManyToManyRelation["Group"] = ManyToManyField(
-        "models.Group", related_name="users", through="group_membership"
+        "models.Group", related_name="users", through="group_membership",forward_key="user_id",                # matches your DB column
+        backward_key="group_id",
     )
     
     class Meta:
@@ -29,7 +30,7 @@ class User(Model):
 
 
 class Group(Model):
-    _id = IntField(pk=True)
+    id = IntField(pk=True)
     group_id = BigIntField(unique=True)
     name = CharField(max_length=100)
 
