@@ -87,44 +87,44 @@ docker-compose down
 ### 👤 User table
 | id | user_id | username   | name            |
 |:--:|:-------:|:----------:|:---------------:|
-| 1  | U1001   | johndoe    | John Doe        |
-| 2  | U1002   | janesmith  | Jane Smith      |
-| 3  | U1003   | alexj      | Alex Johnson    |
-| 4  | U1004   | mariab     | Maria Brown     |
-| 5  | U1005   | chrisp     | Chris Parker    |
-| 6  | U1006   | lindaw     | Linda White     |
-| 7  | U1007   | robertk    | Robert King     |
-| 8  | U1008   | sarahl     | Sarah Lewis     |
-| 9  | U1009   | danielt    | Daniel Taylor   |
-| 10 | U1010   | emilyr     | Emily Robinson  |
+| 1  | 1001   | johndoe    | John Doe        |
+| 2  | 1002   | janesmith  | Jane Smith      |
+| 3  | 1003   | alexj      | Alex Johnson    |
+| 4  | 1004   | mariab     | Maria Brown     |
+| 5  | 1005   | chrisp     | Chris Parker    |
+| 6  | 1006   | lindaw     | Linda White     |
+| 7  | 1007   | robertk    | Robert King     |
+| 8  | 1008   | sarahl     | Sarah Lewis     |
+| 9  | 1009   | danielt    | Daniel Taylor   |
+| 10 | 1010   | emilyr     | Emily Robinson  |
 
 ### 👥 Group table
 | id | group_id | group_name      |
 |:--:|:--------:|:---------------:|
-| 1  | G2001    | Admins          |
-| 2  | G2002    | Editors         |
-| 3  | G2003    | Viewers         |
-| 4  | G2004    | Contributors    |
-| 5  | G2005    | Moderators      |
-| 6  | G2006    | Guests          |
-| 7  | G2007    | Developers      |
-| 8  | G2008    | Designers       |
-| 9  | G2009    | Testers         |
-| 10 | G2010    | Managers        |
+| 1  | 2001    | Admins          |
+| 2  | 2002    | Editors         |
+| 3  | 2003    | Viewers         |
+| 4  | 2004    | Contributors    |
+| 5  | 2005    | Moderators      |
+| 6  | 2006    | Guests          |
+| 7  | 2007    | Developers      |
+| 8  | 2008    | Designers       |
+| 9  | 2009    | Testers         |
+| 10 | 2010    | Managers        |
 
 ### 🔄 User to Group table
 | id | user_id | group_id |
 |:--:|:-------:|:--------:|
-| 1  | U1001   | G2001    |
-| 2  | U1001   | G2002    |
-| 3  | U1002   | G2003    |
-| 4  | U1002   | G2004    |
-| 5  | U1003   | G2005    |
-| 6  | U1004   | G2006    |
-| 7  | U1005   | G2007    |
-| 8  | U1006   | G2008    |
-| 9  | U1007   | G2009    |
-| 10 | U1008   | G2010    |
+| 1  | 1001   | 2001    |
+| 2  | 1001   | 2002    |
+| 3  | 1002   | 2003    |
+| 4  | 1002   | 2004    |
+| 5  | 1003   | 2005    |
+| 6  | 1004   | 2006    |
+| 7  | 1005   | 2007    |
+| 8  | 1006   | 2008    |
+| 9  | 1007   | 2009    |
+| 10 | 1008   | 2010    |
 ---
 
 ## 📂 Project Structure
