@@ -40,16 +40,16 @@ async def close_db() -> None:
 
 #------------------------------------------------------------User database-------------------------------------------------------------#
 async def get_users_groups(user_id: int) -> tuple[list[str], list[int]]:
-    user = await User.get_or_none(user_id=user_id).prefetch_related("group_memberships")
-    group_memberships = await user.group_memberships.all()
-    groups_ids = [gm.id for gm in group_memberships]
-    groups = [await Group.get_or_none(id=_id) for _id in groups_ids]
+    try:
+        user = await User.get(user_id=user_id)
+    except:
+        raise Exception("User not found")
 
-    return (
-        [g.name for g in groups],
-        [g.group_id for g in groups],
-    )
-    # return([], [])
+    memberships = await GroupMembership.filter(user=user).prefetch_related("group")
+
+    groups = list(map(lambda m: (m.group.id, m.group.name), memberships))
+    print(groups)   
+    return([], [])
 
 
 async def check_user_exists(user_id: int) -> bool:
