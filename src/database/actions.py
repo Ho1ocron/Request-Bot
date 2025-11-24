@@ -44,7 +44,6 @@ async def get_users_groups(user_id: int) -> tuple[list[str], list[int]]:
     group_memberships = await user.group_memberships.all()
     groups_ids = [gm.id for gm in group_memberships]
     groups = [await Group.get(id=_id) for _id in groups_ids]
-    print(groups)
 
     return (
         [g.name for g in groups],
