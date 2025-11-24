@@ -12,7 +12,6 @@ from tortoise.fields import (
     CASCADE
 )
 
-
 class User(Model):
     id = IntField(pk=True)
     user_id = BigIntField(unique=True)
