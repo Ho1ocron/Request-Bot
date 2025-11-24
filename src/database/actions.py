@@ -40,8 +40,17 @@ async def close_db() -> None:
 
 #------------------------------------------------------------User database-------------------------------------------------------------#
 async def get_users_groups(user_id: int) -> tuple[list[str], list[int]]:
-    user = await User.get_or_none(user_id=user_id).prefetch_related("groups")
-    return ([group.name for group in user.groups], [group.group_id for group in user.groups])
+    user = await User.get_or_none(user_id=user_id).prefetch_related("group_memberships")
+    group_memberships = await user.group_memberships.all()
+    groups_ids = [gm.id for gm in group_memberships]
+    groups = [await Group.get(id=_id) for _id in groups_ids]
+    print(groups)
+
+    return (
+        [g.name for g in groups],
+        [g.group_id for g in groups],
+    )
+    # return([], [])
 
 
 async def check_user_exists(user_id: int) -> bool:
@@ -58,14 +67,14 @@ async def create_user(user_id: int, name: str, group_id: int) -> None:
 
     if user:
         # Update username if changed
-        if user.name != name:
-            user.name = name
-            await user.save()
 
         # Ensure membership exists
         membership = await GroupMembership.get_or_none(user=user, group=group)
+        print()
         if not membership:
             await GroupMembership.create(user=user, group=group)
+        if user.name != name:
+            await user.save(update_fields=["name"])
         return
 
     # Create new user

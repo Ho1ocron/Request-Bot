@@ -6,8 +6,10 @@ from tortoise.fields import (
     BigIntField,
     BooleanField,
     DatetimeField,
+    ReverseRelation,
     ManyToManyField, 
     ForeignKeyField,
+    CASCADE
 )
 
 
@@ -17,10 +19,7 @@ class User(Model):
     name = CharField(max_length=50, unique=True)
     is_global_banned = BooleanField(default=False)
     
-    groups: ManyToManyRelation["Group"] = ManyToManyField(
-        "models.Group", related_name="users", through="group_membership",forward_key="user_id",                # matches your DB column
-        backward_key="group_id",
-    )
+    group_memberships: ReverseRelation["GroupMembership"]
     
     class Meta:
         table = "users"
@@ -34,13 +33,13 @@ class Group(Model):
     group_id = BigIntField(unique=True)
     name = CharField(max_length=100)
 
-    users: ManyToManyRelation["User"]
+    group_memberships: ReverseRelation["GroupMembership"]
 
     class Meta:
         table = "groups" 
 
     def __str__(self):
-        return f"Group(id={self._id}, name={self.name})"
+        return f"Group(id={self.id}, name={self.name})"
 
 
 class GroupMembership(Model):
@@ -49,8 +48,8 @@ class GroupMembership(Model):
     Stores ban info and timestamps per group.
     """
     id = IntField(pk=True)
-    user = ForeignKeyField("models.User", related_name="group_memberships")
-    group = ForeignKeyField("models.Group", related_name="group_memberships")
+    user = ForeignKeyField("models.User", related_name="group_memberships", on_delete=CASCADE)
+    group = ForeignKeyField("models.Group", related_name="group_memberships", on_delete=CASCADE)
 
     is_banned = BooleanField(default=False)
     banned_reason = CharField(max_length=255, null=True)
