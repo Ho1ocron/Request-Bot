@@ -45,11 +45,11 @@ async def get_users_groups(user_id: int) -> tuple[list[str], list[int]]:
     except:
         raise Exception("User not found")
 
-    memberships = await GroupMembership.filter(user=user).prefetch_related("group")
+    memberships = await GroupMembership.filter(user=user).prefetch_related("groups")
 
     groups = list(map(lambda m: (m.group.id, m.group.name), memberships))
-    print(groups)   
-    return([], [])
+    
+    return groups
 
 
 async def check_user_exists(user_id: int) -> bool:
