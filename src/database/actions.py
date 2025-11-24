@@ -43,7 +43,7 @@ async def get_users_groups(user_id: int) -> tuple[list[str], list[int]]:
     user = await User.get_or_none(user_id=user_id).prefetch_related("group_memberships")
     group_memberships = await user.group_memberships.all()
     groups_ids = [gm.id for gm in group_memberships]
-    groups = [await Group.get(id=_id) for _id in groups_ids]
+    groups = [await Group.get_or_none(id=_id) for _id in groups_ids]
 
     return (
         [g.name for g in groups],
