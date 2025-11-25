@@ -1,9 +1,7 @@
 from tortoise import Tortoise
 from tortoise.expressions import Q
 
-from datetime import datetime, timezone
-
-from database.models import User, Group, GroupMembership, GroupNotFoundError
+from database.models import User, Group, GroupNotFoundError
 from settings import (
     TORTOISE_MODELS,
     DB_HOST,
@@ -31,6 +29,7 @@ async def init_db() -> None:
             db_url=f"postgres://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
             modules={'models': TORTOISE_MODELS},
         )
+        await Tortoise.generate_schemas()
     return
 
 
@@ -40,16 +39,11 @@ async def close_db() -> None:
 
 #------------------------------------------------------------User database-------------------------------------------------------------#
 async def get_users_groups(user_id: int) -> tuple[list[str], list[int]]:
-    try:
-        user = await User.get(user_id=user_id)
-    except:
-        raise Exception("User not found")
-
-    memberships = await GroupMembership.filter(user=user).prefetch_related("group")
-
-    groups = [list(map(lambda m: m.group.name, memberships)), list(map(lambda m: m.group.group_id, memberships))]
-
-    return groups
+    user = await User.get_or_none(user_id=user_id)
+    if not user:
+        return ([], [])
+    await user.fetch_related("groups")  # load the ManyToMany relation
+    return ([group.name for group in user.groups], [group.group_id for group in user.groups])
 
 
 async def check_user_exists(user_id: int) -> bool:
@@ -61,25 +55,18 @@ async def get_user(user_id: int) -> User:
 
 
 async def create_user(user_id: int, name: str, group_id: int) -> None:
-    user = await User.get_or_none(user_id=user_id)
+    user = await User.filter(user_id=user_id).first()
     group = await Group.get(group_id=group_id)
-
     if user:
-        # Update username if changed
-
-        # Ensure membership exists
-        membership = await GroupMembership.get_or_none(user=user, group=group)
-        print()
-        if not membership:
-            await GroupMembership.create(user=user, group=group)
+        await user.groups.add(group)
         if user.name != name:
-            await user.save(update_fields=["name"])
+            user.name = name
+            await user.save()
         return
-
-    # Create new user
+    
     user = await User.create(user_id=user_id, name=name)
-    await GroupMembership.create(user=user, group=group)
-
+    await user.groups.add(group)
+    user.save()
 
 #------------------------------------------------------------Group database-----------------------------------------------------------#
 
@@ -112,21 +99,3 @@ async def create_group(group_id: int, name: str) -> None:
             await group.save()
     else:
         await Group.create(group_id=group_id, name=name)
-
-
-async def ban_user(user_id: int, group_id: int, reason: str | None = None) -> None:
-    user = await User.get_or_none(user_id=user_id)
-    group = await Group.get_or_none(group_id=group_id)
-    if not user or not group:
-        return
-
-    membership = await GroupMembership.get_or_none(user=user, group=group)
-    if not membership:
-        # Create record if not exists
-        return
-        # membership = await GroupMembership.create(user=user, group=group)
-
-    membership.is_banned = True
-    membership.banned_reason = reason
-    membership.banned_at = datetime.now(timezone.utc)
-    await membership.save()
