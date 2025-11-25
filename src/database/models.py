@@ -2,12 +2,10 @@ from tortoise import Model
 from tortoise.fields import (
     IntField, 
     CharField, 
-    ManyToManyRelation,
     BigIntField,
     BooleanField,
     DatetimeField,
     ReverseRelation,
-    ManyToManyField, 
     ForeignKeyField,
     CASCADE
 )
