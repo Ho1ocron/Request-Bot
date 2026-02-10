@@ -34,9 +34,7 @@ async def init_db() -> None:
 
 
 async def close_db() -> None:
-    await Tortoise.close_connections()
-
-
+    await Tortoise.close_connectin 
 #------------------------------------------------------------User database-------------------------------------------------------------#
 async def get_users_groups(user_id: int) -> tuple[list[str], list[int]]:
     user = await User.get_or_none(user_id=user_id)
